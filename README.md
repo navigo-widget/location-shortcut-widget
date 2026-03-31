@@ -1,2 +1,50 @@
-# location-shortcut-widget
-Project - This app will allow the users to have location shortcuts on their home screen that open the navigation directly in google maps. This is QOL product for people with limited technology exposure.
+# Location Shortcut Widget
+
+**One-tap navigation for the people who need it most.**
+
+Location Shortcut Widget is a mobile app designed for elderly users and anyone with limited technology exposure. It removes the friction of searching, verifying, and navigating through Google Maps by turning frequently visited places into simple, large home-screen shortcuts that open turn-by-turn navigation in a single tap.
+
+## The Problem
+
+Using Google Maps today requires multiple steps:
+
+1. Open the app and type a destination into the search bar.
+2. Pick the correct result from a list of suggestions.
+3. Tap "Directions," choose a travel mode, and then tap "Start."
+
+For many elderly users, each of these steps is a potential point of confusion — small text, unfamiliar UI patterns, and the fear of tapping the wrong thing. The result is that they either avoid going to new places or rely on someone else to set up navigation every time.
+
+## The Solution
+
+Location Shortcut Widget lets users (or their family and friends) pre-configure a set of named shortcuts — **Home, Hospital, Bank, Grocery Store, Temple**, or any place that matters — displayed as large, clearly labeled buttons on the home screen. Tapping a shortcut immediately opens Google Maps with navigation to that destination. No searching, no verifying, no extra taps.
+
+### Key Features
+
+- **One-Tap Navigation** — Each shortcut opens Google Maps directions directly, skipping search and confirmation entirely.
+- **Simple, Senior-Friendly UI** — Large buttons, high-contrast text, and a minimal interface designed for readability and ease of use.
+- **Family & Friend Sharing** — Shortcuts can be shared via WhatsApp, iMessage, or any messaging app as a simple link. When the recipient taps the link, the location is automatically added to their home screen widget — no manual setup required.
+- **Easy Setup** — Adding a new shortcut is as simple as searching for a place once and giving it a name. Family members can set up shortcuts remotely by sharing them.
+- **Customizable Labels & Icons** — Each shortcut can have a friendly name and icon (e.g., a house for Home, a red cross for Hospital) so users recognize destinations at a glance.
+
+### How Sharing Works
+
+1. A family member creates a shortcut (e.g., "City Hospital") in their own app.
+2. They tap **Share** and send it via WhatsApp or Messages.
+3. The elderly user receives a link, taps it, and the shortcut is automatically added to their home screen.
+4. From that point on, one tap is all it takes to navigate there.
+
+This means a son or daughter in another city can set up their parent's entire shortcut collection without being physically present.
+
+## Who Is This For?
+
+- **Elderly users** who find multi-step app navigation confusing or intimidating.
+- **Caregivers and family members** who want to simplify technology for their loved ones.
+- **Anyone** who wants faster, friction-free navigation to their regular destinations.
+
+## Tech Stack
+
+*To be decided — details will be added as development begins.*
+
+## License
+
+This project is open source. License details to be added.
