@@ -6,8 +6,8 @@
 -keep class io.flutter.** { *; }
 -keep class io.flutter.plugins.** { *; }
 
-# Hive
--keep class * extends com.google.protobuf.GeneratedMessageLite { *; }
-
 # Keep annotations
 -keepattributes *Annotation*
+
+# Play Core (referenced by Flutter engine for deferred components)
+-dontwarn com.google.android.play.core.**
