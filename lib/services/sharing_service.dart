@@ -9,8 +9,6 @@ class SharingService {
     final message =
         'Tap to add "${shortcut.label}" to your Location Shortcuts app:\n$deepLink';
 
-    await SharePlus.instance.share(
-      ShareParams(text: message, title: 'Share Location Shortcut'),
-    );
+    await Share.share(message, subject: 'Share Location Shortcut');
   }
 }
