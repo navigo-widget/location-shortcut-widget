@@ -3,6 +3,7 @@ import 'package:location_shortcut_widget/models/shortcut.dart';
 import 'package:location_shortcut_widget/utils/shortcut_icons.dart';
 
 /// A large, senior-friendly button tile for a single location shortcut.
+/// Vibrant colors with theme-aware backgrounds.
 class ShortcutButton extends StatelessWidget {
   final LocationShortcut shortcut;
   final VoidCallback onTap;
@@ -18,9 +19,20 @@ class ShortcutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final iconData = getShortcutIcon(shortcut.iconName);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Card(
-      color: iconData.color.withAlpha(30),
+      color: isDark
+          ? iconData.color.withAlpha(30)
+          : iconData.color.withAlpha(20),
+      elevation: isDark ? 1 : 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: iconData.color.withAlpha(isDark ? 60 : 40),
+          width: 1.5,
+        ),
+      ),
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
@@ -30,18 +42,32 @@ class ShortcutButton extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Large icon
+              // Large colorful icon circle
               Container(
                 width: 72,
                 height: 72,
                 decoration: BoxDecoration(
-                  color: iconData.color.withAlpha(50),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      iconData.color,
+                      iconData.color.withAlpha(180),
+                    ],
+                  ),
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: iconData.color.withAlpha(60),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
                 child: Icon(
                   iconData.icon,
-                  size: 40,
-                  color: iconData.color,
+                  size: 36,
+                  color: Colors.white,
                   semanticLabel: shortcut.label,
                 ),
               ),
@@ -49,9 +75,10 @@ class ShortcutButton extends StatelessWidget {
               // Label
               Text(
                 shortcut.label,
-                style: const TextStyle(
-                  fontSize: 18,
+                style: TextStyle(
+                  fontSize: 17,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
@@ -59,12 +86,21 @@ class ShortcutButton extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               // Tap hint
-              Text(
-                'Tap to navigate',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[600],
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.navigation_rounded, size: 14, color: iconData.color.withAlpha(180)),
+                  const SizedBox(width: 3),
+                  Text(
+                    'Navigate',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: iconData.color.withAlpha(180),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

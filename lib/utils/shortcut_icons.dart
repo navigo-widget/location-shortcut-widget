@@ -12,62 +12,121 @@ class ShortcutIconData {
   });
 }
 
-/// Predefined icon options for shortcuts.
-/// Each entry maps an icon name (stored in the model) to its visual data.
+/// Predefined icon options for shortcuts — vibrant and colorful.
 const Map<String, ShortcutIconData> shortcutIcons = {
   'home': ShortcutIconData(
-    icon: Icons.home,
-    color: Color(0xFF4CAF50),
+    icon: Icons.home_rounded,
+    color: Color(0xFF2E7D32),
     label: 'Home',
   ),
   'hospital': ShortcutIconData(
-    icon: Icons.local_hospital,
-    color: Color(0xFFF44336),
+    icon: Icons.local_hospital_rounded,
+    color: Color(0xFFD32F2F),
     label: 'Hospital',
   ),
   'bank': ShortcutIconData(
-    icon: Icons.account_balance,
-    color: Color(0xFF3F51B5),
+    icon: Icons.account_balance_rounded,
+    color: Color(0xFF1565C0),
     label: 'Bank',
   ),
   'grocery': ShortcutIconData(
-    icon: Icons.shopping_cart,
-    color: Color(0xFFFF9800),
+    icon: Icons.shopping_cart_rounded,
+    color: Color(0xFFE65100),
     label: 'Grocery',
   ),
   'temple': ShortcutIconData(
-    icon: Icons.temple_hindu,
-    color: Color(0xFFFF5722),
+    icon: Icons.temple_hindu_rounded,
+    color: Color(0xFFBF360C),
     label: 'Temple',
   ),
+  'mosque': ShortcutIconData(
+    icon: Icons.mosque_rounded,
+    color: Color(0xFF00695C),
+    label: 'Mosque',
+  ),
+  'church': ShortcutIconData(
+    icon: Icons.church_rounded,
+    color: Color(0xFF4E342E),
+    label: 'Church',
+  ),
   'pharmacy': ShortcutIconData(
-    icon: Icons.local_pharmacy,
-    color: Color(0xFF009688),
+    icon: Icons.local_pharmacy_rounded,
+    color: Color(0xFF00897B),
     label: 'Pharmacy',
   ),
   'restaurant': ShortcutIconData(
-    icon: Icons.restaurant,
-    color: Color(0xFFE91E63),
+    icon: Icons.restaurant_rounded,
+    color: Color(0xFFC2185B),
     label: 'Restaurant',
   ),
+  'cafe': ShortcutIconData(
+    icon: Icons.coffee_rounded,
+    color: Color(0xFF6D4C41),
+    label: 'Cafe',
+  ),
   'park': ShortcutIconData(
-    icon: Icons.park,
-    color: Color(0xFF8BC34A),
+    icon: Icons.park_rounded,
+    color: Color(0xFF558B2F),
     label: 'Park',
   ),
   'office': ShortcutIconData(
-    icon: Icons.work,
-    color: Color(0xFF607D8B),
+    icon: Icons.business_rounded,
+    color: Color(0xFF455A64),
     label: 'Office',
   ),
   'school': ShortcutIconData(
-    icon: Icons.school,
-    color: Color(0xFF9C27B0),
+    icon: Icons.school_rounded,
+    color: Color(0xFF6A1B9A),
     label: 'School',
   ),
+  'gym': ShortcutIconData(
+    icon: Icons.fitness_center_rounded,
+    color: Color(0xFFEF6C00),
+    label: 'Gym',
+  ),
+  'doctor': ShortcutIconData(
+    icon: Icons.medical_services_rounded,
+    color: Color(0xFFAD1457),
+    label: 'Doctor',
+  ),
+  'airport': ShortcutIconData(
+    icon: Icons.flight_rounded,
+    color: Color(0xFF0277BD),
+    label: 'Airport',
+  ),
+  'train': ShortcutIconData(
+    icon: Icons.train_rounded,
+    color: Color(0xFF283593),
+    label: 'Train',
+  ),
+  'bus': ShortcutIconData(
+    icon: Icons.directions_bus_rounded,
+    color: Color(0xFF1B5E20),
+    label: 'Bus Stop',
+  ),
+  'petrol': ShortcutIconData(
+    icon: Icons.local_gas_station_rounded,
+    color: Color(0xFF37474F),
+    label: 'Petrol',
+  ),
+  'market': ShortcutIconData(
+    icon: Icons.storefront_rounded,
+    color: Color(0xFFF57F17),
+    label: 'Market',
+  ),
+  'friend': ShortcutIconData(
+    icon: Icons.people_rounded,
+    color: Color(0xFF7B1FA2),
+    label: 'Friend',
+  ),
+  'family': ShortcutIconData(
+    icon: Icons.family_restroom_rounded,
+    color: Color(0xFF00838F),
+    label: 'Family',
+  ),
   'place': ShortcutIconData(
-    icon: Icons.place,
-    color: Color(0xFF795548),
+    icon: Icons.place_rounded,
+    color: Color(0xFF5D4037),
     label: 'Other',
   ),
 };
@@ -75,4 +134,43 @@ const Map<String, ShortcutIconData> shortcutIcons = {
 /// Get the icon data for a given icon name, with a fallback.
 ShortcutIconData getShortcutIcon(String iconName) {
   return shortcutIcons[iconName] ?? shortcutIcons['place']!;
+}
+
+/// Auto-detect the best icon based on a place name/address.
+/// Returns the icon key (e.g. 'hospital', 'bank').
+String autoDetectIcon(String placeName) {
+  final lower = placeName.toLowerCase();
+
+  final patterns = <String, List<String>>{
+    'hospital': ['hospital', 'medical center', 'clinic', 'health center', 'emergency'],
+    'doctor': ['doctor', 'dr.', 'physician', 'dentist', 'dental'],
+    'pharmacy': ['pharmacy', 'chemist', 'drugstore', 'medical store', 'medicine'],
+    'bank': ['bank', 'atm', 'credit union', 'finance'],
+    'grocery': ['grocery', 'supermarket', 'mart', 'provision', 'kirana'],
+    'restaurant': ['restaurant', 'bistro', 'diner', 'eatery', 'dhaba', 'food'],
+    'cafe': ['cafe', 'coffee', 'starbucks', 'bakery'],
+    'temple': ['temple', 'mandir', 'hindu', 'gurudwara'],
+    'mosque': ['mosque', 'masjid', 'islamic'],
+    'church': ['church', 'cathedral', 'chapel', 'christian'],
+    'school': ['school', 'college', 'university', 'academy', 'institute', 'education'],
+    'park': ['park', 'garden', 'playground', 'nature'],
+    'gym': ['gym', 'fitness', 'yoga', 'workout', 'sports'],
+    'airport': ['airport', 'terminal', 'aviation'],
+    'train': ['train', 'railway', 'station', 'metro'],
+    'bus': ['bus stop', 'bus stand', 'bus station', 'bus depot'],
+    'petrol': ['petrol', 'gas station', 'fuel', 'diesel', 'petroleum'],
+    'market': ['market', 'bazaar', 'mall', 'shopping', 'store', 'shop'],
+    'office': ['office', 'corporate', 'workspace', 'coworking'],
+    'home': ['home', 'house', 'apartment', 'residence', 'flat'],
+  };
+
+  for (final entry in patterns.entries) {
+    for (final keyword in entry.value) {
+      if (lower.contains(keyword)) {
+        return entry.key;
+      }
+    }
+  }
+
+  return 'place';
 }

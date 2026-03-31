@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:location_shortcut_widget/models/shortcut.dart';
 import 'package:location_shortcut_widget/providers/shortcuts_provider.dart';
+import 'package:location_shortcut_widget/utils/shortcut_icons.dart';
 import 'package:location_shortcut_widget/widgets/icon_picker.dart';
 import 'package:location_shortcut_widget/widgets/place_search_field.dart';
 
@@ -79,6 +80,8 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
                     _labelController.text =
                         result.description.split(',').first.trim();
                   }
+                  // Auto-detect icon based on place name
+                  _selectedIcon = autoDetectIcon(result.description);
                 });
               },
             ),

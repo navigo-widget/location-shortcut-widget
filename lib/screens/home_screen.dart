@@ -16,6 +16,13 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Places'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, size: 28),
+            tooltip: 'Settings',
+            onPressed: () => context.push('/settings'),
+          ),
+        ],
       ),
       body: shortcuts.isEmpty
           ? const EmptyState()

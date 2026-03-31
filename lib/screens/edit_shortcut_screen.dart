@@ -52,7 +52,7 @@ class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
           IconButton(
             icon: const Icon(Icons.share, size: 28),
             tooltip: 'Share this shortcut',
-            onPressed: () => SharingService.shareShortcut(shortcut),
+            onPressed: () => SharingService.shareShortcutWithFallback(shortcut),
           ),
         ],
       ),
