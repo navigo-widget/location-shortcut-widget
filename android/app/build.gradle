@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace "com.locationshortcut.widget"
-    compileSdk 34
+    compileSdk 35
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -20,13 +20,9 @@ android {
     defaultConfig {
         applicationId "com.locationshortcut.widget"
         minSdk 24
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0.0"
-
-        // Pass API keys from dart-define or local.properties
-        def mapsApiKey = project.hasProperty('MAPS_API_KEY') ? project.property('MAPS_API_KEY') : ""
-        manifestPlaceholders = [MAPS_API_KEY: mapsApiKey]
     }
 
     buildTypes {

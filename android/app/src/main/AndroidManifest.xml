@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.locationshortcut.widget">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Internet permission for Google Places API -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -55,11 +54,6 @@
         <meta-data
             android:name="flutter_deeplinking_enabled"
             android:value="false" />
-
-        <!-- Google Maps API Key (passed via --dart-define or gradle properties) -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="${MAPS_API_KEY}" />
 
         <!-- Home screen widget receiver -->
         <receiver
