@@ -1,4 +1,4 @@
-package com.locationshortcut.widget
+package com.navigo.app
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -11,13 +11,14 @@ import es.antonborri.home_widget.HomeWidgetProvider
 import org.json.JSONArray
 
 /**
- * Android home screen widget that displays up to 6 location shortcuts.
+ * NaviGo home screen widget — displays up to 6 location shortcuts.
  * Each shortcut button directly opens Google Maps navigation.
+ *
+ * Icons use Material-style vector drawables that match the Flutter app icons.
  */
 class ShortcutWidgetProvider : HomeWidgetProvider() {
 
     companion object {
-        // Resource IDs for each slot (layout, icon, label)
         private data class SlotIds(val container: Int, val icon: Int, val label: Int)
 
         private val slots = listOf(
@@ -29,20 +30,16 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
             SlotIds(R.id.slot_5, R.id.icon_5, R.id.label_5),
         )
 
-        // Map icon names to Android system drawable resources
-        private val iconMap = mapOf(
-            "home" to android.R.drawable.ic_menu_myplaces,
-            "hospital" to android.R.drawable.ic_menu_add,
-            "bank" to android.R.drawable.ic_menu_agenda,
-            "grocery" to android.R.drawable.ic_menu_gallery,
-            "temple" to android.R.drawable.ic_menu_compass,
-            "pharmacy" to android.R.drawable.ic_menu_add,
-            "restaurant" to android.R.drawable.ic_menu_preferences,
-            "park" to android.R.drawable.ic_menu_mapmode,
-            "office" to android.R.drawable.ic_menu_edit,
-            "school" to android.R.drawable.ic_menu_info_details,
-            "place" to android.R.drawable.ic_menu_mylocation,
-        )
+        // Map icon names to custom drawable resources (matching Flutter app icons)
+        private fun getIconRes(context: Context, iconName: String): Int {
+            val resName = "ic_shortcut_$iconName"
+            val resId = context.resources.getIdentifier(resName, "drawable", context.packageName)
+            // Fallback to place icon if custom icon not found
+            return if (resId != 0) resId else {
+                val fallback = context.resources.getIdentifier("ic_shortcut_place", "drawable", context.packageName)
+                if (fallback != 0) fallback else android.R.drawable.ic_menu_mylocation
+            }
+        }
     }
 
     override fun onUpdate(
@@ -54,11 +51,9 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
         for (appWidgetId in appWidgetIds) {
             val views = RemoteViews(context.packageName, R.layout.shortcut_widget)
 
-            // Read shortcut data synced from Flutter
             val jsonString = widgetData.getString("shortcuts_json", "[]") ?: "[]"
             val shortcuts = JSONArray(jsonString)
 
-            // Populate each slot
             for (i in slots.indices) {
                 val slot = slots[i]
 
@@ -69,28 +64,22 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
                     val lng = shortcut.getDouble("longitude")
                     val iconName = shortcut.optString("iconName", "place")
 
-                    // Show the slot
                     views.setViewVisibility(slot.container, View.VISIBLE)
                     views.setTextViewText(slot.label, label)
+                    views.setImageViewResource(slot.icon, getIconRes(context, iconName))
 
-                    // Set icon
-                    val iconRes = iconMap[iconName] ?: android.R.drawable.ic_menu_mylocation
-                    views.setImageViewResource(slot.icon, iconRes)
-
-                    // Create PendingIntent to open Google Maps navigation directly
                     val navUri = Uri.parse("google.navigation:q=$lat,$lng")
                     val navIntent = Intent(Intent.ACTION_VIEW, navUri).apply {
                         setPackage("com.google.android.apps.maps")
                     }
                     val pendingIntent = PendingIntent.getActivity(
                         context,
-                        i, // unique request code per slot
+                        i,
                         navIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
                     views.setOnClickPendingIntent(slot.container, pendingIntent)
                 } else {
-                    // Hide unused slots
                     views.setViewVisibility(slot.container, View.GONE)
                 }
             }

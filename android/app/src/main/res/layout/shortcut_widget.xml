@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Glass-style translucent widget layout -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="8dp"
+    android:padding="12dp"
     android:background="@drawable/widget_background">
 
     <!-- Title -->
@@ -11,10 +12,14 @@
         android:id="@+id/widget_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="My Places"
-        android:textSize="18sp"
+        android:text="NaviGo"
+        android:textSize="16sp"
         android:textStyle="bold"
-        android:textColor="#212121"
+        android:textColor="#FFFFFFFF"
+        android:shadowColor="#44000000"
+        android:shadowDx="0"
+        android:shadowDy="1"
+        android:shadowRadius="2"
         android:paddingBottom="8dp"
         android:paddingStart="4dp"
         android:paddingEnd="4dp" />
@@ -35,20 +40,22 @@
             android:layout_columnWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="10dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_0"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
+                android:textColor="#DD000000"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />
@@ -62,20 +69,22 @@
             android:layout_columnWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="10dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_1"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
+                android:textColor="#DD000000"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />
@@ -89,20 +98,22 @@
             android:layout_columnWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="10dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_2"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
+                android:textColor="#DD000000"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />
@@ -116,20 +127,22 @@
             android:layout_columnWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="10dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_3"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
+                android:textColor="#DD000000"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />
@@ -143,20 +156,22 @@
             android:layout_columnWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="10dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_4"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
+                android:textColor="#DD000000"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />
@@ -170,20 +185,22 @@
             android:layout_columnWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="10dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_5"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
+                android:textColor="#DD000000"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />

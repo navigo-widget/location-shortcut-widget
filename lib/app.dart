@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
-import 'package:location_shortcut_widget/screens/home_screen.dart';
-import 'package:location_shortcut_widget/screens/add_shortcut_screen.dart';
-import 'package:location_shortcut_widget/screens/edit_shortcut_screen.dart';
-import 'package:location_shortcut_widget/screens/confirm_add_screen.dart';
-import 'package:location_shortcut_widget/services/deep_link_service.dart';
-import 'package:location_shortcut_widget/theme/app_theme.dart';
+import 'package:navigo/models/shortcut.dart';
+import 'package:navigo/providers/theme_provider.dart';
+import 'package:navigo/screens/home_screen.dart';
+import 'package:navigo/screens/add_shortcut_screen.dart';
+import 'package:navigo/screens/edit_shortcut_screen.dart';
+import 'package:navigo/screens/confirm_add_screen.dart';
+import 'package:navigo/screens/settings_screen.dart';
+import 'package:navigo/services/deep_link_service.dart';
+import 'package:navigo/theme/app_theme.dart';
 
 /// Root GoRouter configuration.
 final routerProvider = Provider<GoRouter>((ref) {
@@ -35,6 +37,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           final shortcut = state.extra as LocationShortcut;
           return ConfirmAddScreen(shortcut: shortcut);
         },
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );
@@ -76,10 +82,13 @@ class _AppState extends ConsumerState<App> {
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
-      title: 'Location Shortcuts',
-      theme: AppTheme.theme,
+      title: 'NaviGo',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );

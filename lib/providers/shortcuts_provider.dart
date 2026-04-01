@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
-import 'package:location_shortcut_widget/services/storage_service.dart';
-import 'package:location_shortcut_widget/services/widget_service.dart';
+import 'package:navigo/models/shortcut.dart';
+import 'package:navigo/services/storage_service.dart';
+import 'package:navigo/services/widget_service.dart';
 
 const _uuid = Uuid();
 

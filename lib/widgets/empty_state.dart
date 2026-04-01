@@ -6,6 +6,9 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
@@ -13,23 +16,23 @@ class EmptyState extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.add_location_alt,
+              Icons.add_location_alt_rounded,
               size: 100,
-              color: Colors.grey[400],
+              color: isDark ? Colors.grey[600] : Colors.grey[400],
             ),
             const SizedBox(height: 24),
             Text(
               'No shortcuts yet',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Colors.grey[600],
+              style: theme.textTheme.headlineMedium?.copyWith(
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
                   ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             Text(
               'Tap the + button below to add\nyour first place!',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.grey[500],
+              style: theme.textTheme.bodyLarge?.copyWith(
+                    color: isDark ? Colors.grey[500] : Colors.grey[500],
                   ),
               textAlign: TextAlign.center,
             ),

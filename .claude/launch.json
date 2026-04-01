@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Flutter Debug (Android)",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "--dart-define=PLACES_API_KEY=${PLACES_API_KEY}"],
+      "port": 8080
+    },
+    {
+      "name": "Flutter Web (Debug)",
+      "runtimeExecutable": "flutter",
+      "runtimeArgs": ["run", "-d", "chrome", "--web-port=3000", "--dart-define=PLACES_API_KEY=${PLACES_API_KEY}"],
+      "port": 3000
+    }
+  ]
+}

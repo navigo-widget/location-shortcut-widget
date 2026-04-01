@@ -1,5 +1,5 @@
-name: location_shortcut_widget
-description: One-tap navigation shortcuts for elderly users - opens Google Maps directions directly.
+name: navigo
+description: NaviGo - One-tap navigation shortcuts for elderly users. Opens Google Maps directions directly.
 publish_to: 'none'
 version: 1.0.0+1
 

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:location_shortcut_widget/providers/shortcuts_provider.dart';
-import 'package:location_shortcut_widget/services/navigation_service.dart';
-import 'package:location_shortcut_widget/widgets/shortcut_button.dart';
-import 'package:location_shortcut_widget/widgets/empty_state.dart';
+import 'package:navigo/providers/shortcuts_provider.dart';
+import 'package:navigo/services/navigation_service.dart';
+import 'package:navigo/widgets/shortcut_button.dart';
+import 'package:navigo/widgets/empty_state.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -15,7 +15,14 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Places'),
+        title: const Text('NaviGo'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, size: 28),
+            tooltip: 'Settings',
+            onPressed: () => context.push('/settings'),
+          ),
+        ],
       ),
       body: shortcuts.isEmpty
           ? const EmptyState()
@@ -24,7 +31,7 @@ class HomeScreen extends ConsumerWidget {
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 0.9,
+                  childAspectRatio: 0.85,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
                 ),
@@ -33,8 +40,8 @@ class HomeScreen extends ConsumerWidget {
                   final shortcut = shortcuts[index];
                   return ShortcutButton(
                     shortcut: shortcut,
-                    onTap: () => _navigateToPlace(context, shortcut),
-                    onLongPress: () => context.push('/edit/${shortcut.id}'),
+                    onEdit: () => context.push('/edit/${shortcut.id}'),
+                    onNavigate: () => _navigateToPlace(context, shortcut),
                   );
                 },
               ),

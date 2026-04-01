@@ -1,74 +1,127 @@
 import 'package:flutter/material.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
-import 'package:location_shortcut_widget/utils/shortcut_icons.dart';
+import 'package:navigo/models/shortcut.dart';
+import 'package:navigo/utils/shortcut_icons.dart';
 
-/// A large, senior-friendly button tile for a single location shortcut.
+/// A senior-friendly tile with split tap zones:
+/// - Top 75%: tap to edit the shortcut
+/// - Bottom 25%: tap to navigate via Google Maps
 class ShortcutButton extends StatelessWidget {
   final LocationShortcut shortcut;
-  final VoidCallback onTap;
-  final VoidCallback onLongPress;
+  final VoidCallback onNavigate;
+  final VoidCallback onEdit;
 
   const ShortcutButton({
     super.key,
     required this.shortcut,
-    required this.onTap,
-    required this.onLongPress,
+    required this.onNavigate,
+    required this.onEdit,
   });
 
   @override
   Widget build(BuildContext context) {
     final iconData = getShortcutIcon(shortcut.iconName);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Card(
-      color: iconData.color.withAlpha(30),
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
+      color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+      elevation: isDark ? 1 : 2,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Large icon
-              Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: iconData.color.withAlpha(50),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  iconData.icon,
-                  size: 40,
-                  color: iconData.color,
-                  semanticLabel: shortcut.label,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          // ─── Top 75%: Edit zone ─────────────────────────
+          Expanded(
+            flex: 75,
+            child: InkWell(
+              onTap: onEdit,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Colorful icon circle
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            iconData.color,
+                            iconData.color.withAlpha(180),
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: iconData.color.withAlpha(50),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        iconData.icon,
+                        size: 32,
+                        color: Colors.white,
+                        semanticLabel: shortcut.label,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    // Label
+                    Text(
+                      shortcut.label,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 12),
-              // Label
-              Text(
-                shortcut.label,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 4),
-              // Tap hint
-              Text(
-                'Tap to navigate',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+
+          // ─── Bottom 25%: Navigate zone ──────────────────
+          Expanded(
+            flex: 25,
+            child: InkWell(
+              onTap: onNavigate,
+              child: Container(
+                color: iconData.color.withAlpha(isDark ? 40 : 20),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.navigation_rounded,
+                        size: 18,
+                        color: iconData.color,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        'Navigate',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: iconData.color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

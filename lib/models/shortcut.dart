@@ -61,7 +61,7 @@ class LocationShortcut extends HiveObject {
   /// Serialize this shortcut into a deep link URI for sharing.
   Uri toDeepLinkUri() {
     return Uri(
-      scheme: 'locationshortcut',
+      scheme: 'navigo',
       host: 'add',
       queryParameters: {
         'label': label,

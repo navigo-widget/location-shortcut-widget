@@ -1,8 +1,8 @@
-# Location Shortcut Widget
+# NaviGo
 
 **One-tap navigation for the people who need it most.**
 
-Location Shortcut Widget is a mobile app designed for elderly users and anyone with limited technology exposure. It removes the friction of searching, verifying, and navigating through Google Maps by turning frequently visited places into simple, large home-screen shortcuts that open turn-by-turn navigation in a single tap.
+NaviGo is a mobile app designed for elderly users and anyone with limited technology exposure. It removes the friction of searching, verifying, and navigating through Google Maps by turning frequently visited places into simple, large home-screen shortcuts that open turn-by-turn navigation in a single tap.
 
 ## The Problem
 
@@ -16,7 +16,7 @@ For many elderly users, each of these steps is a potential point of confusion �
 
 ## The Solution
 
-Location Shortcut Widget lets users (or their family and friends) pre-configure a set of named shortcuts — **Home, Hospital, Bank, Grocery Store, Temple**, or any place that matters — displayed as large, clearly labeled buttons on the home screen. Tapping a shortcut immediately opens Google Maps with navigation to that destination. No searching, no verifying, no extra taps.
+NaviGo lets users (or their family and friends) pre-configure a set of named shortcuts — **Home, Hospital, Bank, Grocery Store, Temple**, or any place that matters — displayed as large, clearly labeled buttons on the home screen. Tapping a shortcut immediately opens Google Maps with navigation to that destination. No searching, no verifying, no extra taps.
 
 ### Key Features
 

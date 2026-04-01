@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:app_links/app_links.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
-import 'package:location_shortcut_widget/utils/constants.dart';
+import 'package:navigo/models/shortcut.dart';
+import 'package:navigo/utils/constants.dart';
 
 /// Listens for incoming deep links and converts them to LocationShortcut objects.
 class DeepLinkService {

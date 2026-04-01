@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
-import 'package:location_shortcut_widget/utils/constants.dart';
-import 'package:location_shortcut_widget/app.dart';
+import 'package:navigo/models/shortcut.dart';
+import 'package:navigo/utils/constants.dart';
+import 'package:navigo/app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
