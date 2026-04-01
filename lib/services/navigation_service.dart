@@ -1,5 +1,5 @@
 import 'package:url_launcher/url_launcher.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
+import 'package:navigo/models/shortcut.dart';
 
 /// Opens Google Maps navigation for a given shortcut.
 class NavigationService {

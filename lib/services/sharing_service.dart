@@ -1,5 +1,5 @@
 import 'package:share_plus/share_plus.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
+import 'package:navigo/models/shortcut.dart';
 
 /// Shares a shortcut as a deep link via the system share sheet.
 ///
@@ -18,10 +18,10 @@ class SharingService {
 
     final message =
         'I\'m sharing "${shortcut.label}" with you! '
-        'Tap the link to add it to your Location Shortcuts app:\n\n'
+        'Tap the link to add it to your NaviGo app:\n\n'
         '$redirectUrl';
 
-    await Share.share(message, subject: 'Location Shortcut: ${shortcut.label}');
+    await Share.share(message, subject: 'NaviGo: ${shortcut.label}');
   }
 
   /// Build an HTTPS-based shareable URL.
@@ -45,11 +45,11 @@ class SharingService {
 
     final message =
         'I\'m sharing "${shortcut.label}" with you!\n\n'
-        'If you have the Location Shortcuts app, tap here:\n'
+        'If you have the NaviGo app, tap here:\n'
         '$deepLink\n\n'
         'Or open in Google Maps:\n'
         '$mapsUrl';
 
-    await Share.share(message, subject: 'Location Shortcut: ${shortcut.label}');
+    await Share.share(message, subject: 'NaviGo: ${shortcut.label}');
   }
 }

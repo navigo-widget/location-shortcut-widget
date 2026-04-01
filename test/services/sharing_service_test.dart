@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
+import 'package:navigo/models/shortcut.dart';
 
 void main() {
   group('Sharing deep link construction', () {
@@ -18,7 +18,7 @@ void main() {
 
       final uri = shortcut.toDeepLinkUri();
 
-      expect(uri.toString(), contains('locationshortcut://add'));
+      expect(uri.toString(), contains('navigo://add'));
       expect(uri.queryParameters['label'], 'My Home');
       expect(uri.queryParameters['lat'], '12.9716');
       expect(uri.queryParameters['lng'], '77.5946');

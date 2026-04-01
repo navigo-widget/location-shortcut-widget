@@ -1,6 +1,6 @@
 import 'package:hive_ce/hive.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
-import 'package:location_shortcut_widget/utils/constants.dart';
+import 'package:navigo/models/shortcut.dart';
+import 'package:navigo/utils/constants.dart';
 
 /// Wraps Hive box operations for LocationShortcut persistence.
 class StorageService {

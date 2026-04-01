@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:home_widget/home_widget.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
-import 'package:location_shortcut_widget/utils/constants.dart';
+import 'package:navigo/models/shortcut.dart';
+import 'package:navigo/utils/constants.dart';
 
 /// Syncs shortcut data to the Android home screen widget.
 class WidgetService {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
-import 'package:location_shortcut_widget/providers/shortcuts_provider.dart';
-import 'package:location_shortcut_widget/utils/shortcut_icons.dart';
+import 'package:navigo/models/shortcut.dart';
+import 'package:navigo/providers/shortcuts_provider.dart';
+import 'package:navigo/utils/shortcut_icons.dart';
 
 /// Shown when the app receives a deep link to add a shared shortcut.
 /// Acts as a confirmation gate so links can't silently add shortcuts.

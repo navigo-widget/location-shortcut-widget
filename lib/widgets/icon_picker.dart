@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:location_shortcut_widget/utils/shortcut_icons.dart';
+import 'package:navigo/utils/shortcut_icons.dart';
 
 /// A colorful grid of preset icons for the user to choose from.
 class IconPicker extends StatelessWidget {

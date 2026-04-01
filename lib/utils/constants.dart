@@ -1,4 +1,4 @@
-const String kDeepLinkScheme = 'locationshortcut';
+const String kDeepLinkScheme = 'navigo';
 const String kDeepLinkHost = 'add';
 const String kHiveBoxName = 'shortcuts';
 const String kWidgetDataKey = 'shortcuts_json';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:location_shortcut_widget/providers/shortcuts_provider.dart';
-import 'package:location_shortcut_widget/services/sharing_service.dart';
-import 'package:location_shortcut_widget/widgets/icon_picker.dart';
+import 'package:navigo/providers/shortcuts_provider.dart';
+import 'package:navigo/services/sharing_service.dart';
+import 'package:navigo/widgets/icon_picker.dart';
 
 class EditShortcutScreen extends ConsumerStatefulWidget {
   final String shortcutId;

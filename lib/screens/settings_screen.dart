@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:location_shortcut_widget/providers/theme_provider.dart';
+import 'package:navigo/providers/theme_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -63,7 +63,7 @@ class SettingsScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Location Shortcuts',
+                    'NaviGo',
                     style: theme.textTheme.titleMedium,
                   ),
                   const SizedBox(height: 4),
@@ -73,7 +73,7 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'One-tap navigation for the people who need it most.',
+                    'One-tap navigation for the people who need it most.\nNaviGo makes getting around simple.',
                     style: theme.textTheme.bodyLarge,
                   ),
                 ],

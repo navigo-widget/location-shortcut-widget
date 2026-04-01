@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:location_shortcut_widget/models/shortcut.dart';
+import 'package:navigo/models/shortcut.dart';
 
 void main() {
   group('LocationShortcut', () {
@@ -36,7 +36,7 @@ void main() {
     test('toDeepLinkUri produces valid URI with all fields', () {
       final uri = shortcut.toDeepLinkUri();
 
-      expect(uri.scheme, 'locationshortcut');
+      expect(uri.scheme, 'navigo');
       expect(uri.host, 'add');
       expect(uri.queryParameters['label'], 'City Hospital');
       expect(uri.queryParameters['lat'], '28.6139');
@@ -48,7 +48,7 @@ void main() {
 
     test('fromDeepLink parses URI correctly', () {
       final uri = Uri.parse(
-        'locationshortcut://add?label=My+Bank&lat=40.7128&lng=-74.006&placeId=ChIJbank&address=Wall+St&icon=bank',
+        'navigo://add?label=My+Bank&lat=40.7128&lng=-74.006&placeId=ChIJbank&address=Wall+St&icon=bank',
       );
 
       final parsed = LocationShortcut.fromDeepLink(uri);
@@ -62,7 +62,7 @@ void main() {
     });
 
     test('fromDeepLink handles missing fields with defaults', () {
-      final uri = Uri.parse('locationshortcut://add?label=Test');
+      final uri = Uri.parse('navigo://add?label=Test');
       final parsed = LocationShortcut.fromDeepLink(uri);
 
       expect(parsed.label, 'Test');
@@ -74,7 +74,7 @@ void main() {
     });
 
     test('fromDeepLink handles completely empty URI', () {
-      final uri = Uri.parse('locationshortcut://add');
+      final uri = Uri.parse('navigo://add');
       final parsed = LocationShortcut.fromDeepLink(uri);
 
       expect(parsed.label, 'Unknown Place');

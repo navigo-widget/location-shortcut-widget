@@ -1,4 +1,4 @@
-package com.locationshortcut.widget
+package com.navigo.app
 
 import io.flutter.embedding.android.FlutterActivity
 
