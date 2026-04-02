@@ -42,3 +42,12 @@ google_maps_api_key.txt
 # OS
 .DS_Store
 Thumbs.db
+
+# Worktrees
+.claude/worktrees/
+
+# Generated plugin registrant
+android/app/src/main/java/io/flutter/plugins/
+
+# Lock file
+pubspec.lock
