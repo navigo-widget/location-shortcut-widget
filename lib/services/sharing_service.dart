@@ -22,17 +22,11 @@ class SharingService {
   }
 
   /// Share a shortcut with a friendly message and a single clean link.
-  ///
-  /// [userName] is the sender's name (from settings). If empty, uses "Someone".
-  static Future<void> shareShortcutWithFallback(
-    LocationShortcut shortcut, {
-    String userName = '',
-  }) async {
+  static Future<void> shareShortcutWithFallback(LocationShortcut shortcut) async {
     final shareUrl = buildShareUrl(shortcut);
-    final sender = userName.isNotEmpty ? userName : 'Someone';
 
     final message =
-        '$sender shared a location with you using NaviGo!\n'
+        'Here\'s a location shared via NaviGo!\n'
         '\n'
         'Location: ${shortcut.label}\n'
         '\n'

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigo/providers/shortcuts_provider.dart';
-import 'package:navigo/providers/user_provider.dart';
 import 'package:navigo/services/sharing_service.dart';
 import 'package:navigo/widgets/icon_picker.dart' show IconPickerCompact;
 
@@ -53,7 +52,7 @@ class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
           IconButton(
             icon: const Icon(Icons.share, size: 28),
             tooltip: 'Share this shortcut',
-            onPressed: () => _shareShortcut(shortcut),
+            onPressed: () => SharingService.shareShortcutWithFallback(shortcut),
           ),
         ],
       ),
@@ -151,67 +150,6 @@ class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Future<void> _shareShortcut(shortcut) async {
-    var userName = ref.read(userNameProvider);
-
-    if (userName.isEmpty && mounted) {
-      // Prompt for name on first share
-      final name = await showDialog<String>(
-        context: context,
-        builder: (context) {
-          final controller = TextEditingController();
-          return AlertDialog(
-            title: const Text('What\'s your name?'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Your name will appear in the shared message so the receiver knows who sent it.',
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: controller,
-                  autofocus: true,
-                  style: const TextStyle(fontSize: 20),
-                  decoration: const InputDecoration(
-                    hintText: 'e.g. Grandma, Dad, Amit',
-                  ),
-                  textCapitalization: TextCapitalization.words,
-                  onSubmitted: (value) => Navigator.pop(context, value),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, ''),
-                child: const Text('Skip'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, controller.text),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: Size.zero,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                child: const Text('Continue'),
-              ),
-            ],
-          );
-        },
-      );
-
-      if (name != null && name.isNotEmpty) {
-        await ref.read(userNameProvider.notifier).setName(name);
-        userName = name;
-      }
-    }
-
-    SharingService.shareShortcutWithFallback(
-      shortcut,
-      userName: userName,
     );
   }
 

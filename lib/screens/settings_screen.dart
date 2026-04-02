@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:navigo/providers/theme_provider.dart';
-import 'package:navigo/providers/user_provider.dart';
 import 'package:navigo/services/widget_service.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -13,23 +12,11 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool? _isWidgetPinned;
-  late TextEditingController _nameController;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController();
     _checkWidgetStatus();
-    // Load name after first frame so provider is ready
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _nameController.text = ref.read(userNameProvider);
-    });
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
   }
 
   Future<void> _checkWidgetStatus() async {
@@ -51,31 +38,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          // Your Name section
-          Text(
-            'Your Name',
-            style: theme.textTheme.titleLarge,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Shown when you share a location with someone',
-            style: theme.textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _nameController,
-            style: const TextStyle(fontSize: 20),
-            decoration: const InputDecoration(
-              hintText: 'e.g. Grandma, Dad, Amit',
-            ),
-            textCapitalization: TextCapitalization.words,
-            onChanged: (value) {
-              ref.read(userNameProvider.notifier).setName(value);
-            },
-          ),
-
-          const SizedBox(height: 28),
-
           // Widget section
           Text(
             'Home Screen Widget',
