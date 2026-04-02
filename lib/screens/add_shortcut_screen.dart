@@ -81,12 +81,11 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
                     _labelController.text =
                         result.description.split(',').first.trim();
                   }
-                  // Auto-detect icon from label and full address
+                  // Auto-detect icon from label
                   _selectedIcon = autoDetectIcon(
                     _labelController.text.isNotEmpty
                         ? _labelController.text
                         : result.description.split(',').first.trim(),
-                    result.description,
                   );
                 });
               },
@@ -133,12 +132,9 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
               ),
               onChanged: (value) {
                 setState(() {
-                  // Re-detect icon from label + address if user hasn't manually picked one
+                  // Re-detect icon from label if user hasn't manually picked one
                   if (!_iconManuallyChanged && value.trim().isNotEmpty) {
-                    _selectedIcon = autoDetectIcon(
-                      value,
-                      _selectedPlace?.description ?? '',
-                    );
+                    _selectedIcon = autoDetectIcon(value);
                   }
                 });
               },

@@ -136,55 +136,40 @@ ShortcutIconData getShortcutIcon(String iconName) {
   return shortcutIcons[iconName] ?? shortcutIcons['place']!;
 }
 
-/// Keyword patterns for icon detection.
-const _patterns = <String, List<String>>{
-  'hospital': ['hospital', 'medical center', 'clinic', 'health center', 'emergency'],
-  'doctor': ['doctor', 'dr.', 'physician', 'dentist', 'dental'],
-  'pharmacy': ['pharmacy', 'chemist', 'drugstore', 'medical store', 'medicine'],
-  'bank': ['bank', 'atm', 'credit union', 'finance'],
-  'grocery': ['grocery', 'supermarket', 'mart', 'provision', 'kirana'],
-  'restaurant': ['restaurant', 'bistro', 'diner', 'eatery', 'dhaba', 'food'],
-  'cafe': ['cafe', 'coffee', 'starbucks', 'bakery'],
-  'temple': ['temple', 'mandir', 'hindu', 'gurudwara'],
-  'mosque': ['mosque', 'masjid', 'islamic'],
-  'church': ['church', 'cathedral', 'chapel', 'christian'],
-  'school': ['school', 'college', 'university', 'academy', 'institute', 'education'],
-  'park': ['park', 'garden', 'playground', 'nature'],
-  'gym': ['gym', 'fitness', 'yoga', 'workout', 'sports'],
-  'airport': ['airport', 'terminal', 'aviation'],
-  'train': ['train', 'railway', 'station', 'metro'],
-  'bus': ['bus stop', 'bus stand', 'bus station', 'bus depot'],
-  'petrol': ['petrol', 'gas station', 'fuel', 'diesel', 'petroleum'],
-  'market': ['market', 'bazaar', 'mall', 'shopping', 'store', 'shop'],
-  'office': ['office', 'corporate', 'workspace', 'coworking'],
-  'home': ['home', 'house', 'apartment', 'residence', 'flat'],
-};
+/// Auto-detect the best icon based on the shortcut label.
+/// Returns the icon key (e.g. 'hospital', 'bank').
+String autoDetectIcon(String label) {
+  final lower = label.toLowerCase();
 
-/// Match a single text against patterns. Returns icon key or null.
-String? _matchPatterns(String text) {
-  final lower = text.toLowerCase();
-  for (final entry in _patterns.entries) {
+  const patterns = <String, List<String>>{
+    'hospital': ['hospital', 'medical center', 'clinic', 'health center', 'emergency'],
+    'doctor': ['doctor', 'dr.', 'physician', 'dentist', 'dental'],
+    'pharmacy': ['pharmacy', 'chemist', 'drugstore', 'medical store', 'medicine'],
+    'bank': ['bank', 'atm', 'credit union', 'finance'],
+    'grocery': ['grocery', 'supermarket', 'mart', 'provision', 'kirana'],
+    'restaurant': ['restaurant', 'bistro', 'diner', 'eatery', 'dhaba', 'food'],
+    'cafe': ['cafe', 'coffee', 'starbucks', 'bakery'],
+    'temple': ['temple', 'mandir', 'hindu', 'gurudwara'],
+    'mosque': ['mosque', 'masjid', 'islamic'],
+    'church': ['church', 'cathedral', 'chapel', 'christian'],
+    'school': ['school', 'college', 'university', 'academy', 'institute', 'education'],
+    'park': ['park', 'garden', 'playground', 'nature'],
+    'gym': ['gym', 'fitness', 'yoga', 'workout', 'sports'],
+    'airport': ['airport', 'terminal', 'aviation'],
+    'train': ['train', 'railway', 'station', 'metro'],
+    'bus': ['bus stop', 'bus stand', 'bus station', 'bus depot'],
+    'petrol': ['petrol', 'gas station', 'fuel', 'diesel', 'petroleum'],
+    'market': ['market', 'bazaar', 'mall', 'shopping', 'store', 'shop'],
+    'office': ['office', 'corporate', 'workspace', 'coworking'],
+    'home': ['home', 'house', 'apartment', 'residence', 'flat'],
+  };
+
+  for (final entry in patterns.entries) {
     for (final keyword in entry.value) {
       if (lower.contains(keyword)) {
         return entry.key;
       }
     }
-  }
-  return null;
-}
-
-/// Auto-detect the best icon based on place name and/or address.
-/// Checks the label first, then falls back to the full address.
-/// Returns the icon key (e.g. 'hospital', 'bank').
-String autoDetectIcon(String placeName, [String address = '']) {
-  // Try label first (more specific, user-facing name)
-  final fromName = _matchPatterns(placeName);
-  if (fromName != null) return fromName;
-
-  // Fall back to full address (e.g. "123 Main St, near City Hospital")
-  if (address.isNotEmpty) {
-    final fromAddress = _matchPatterns(address);
-    if (fromAddress != null) return fromAddress;
   }
 
   return 'place';
