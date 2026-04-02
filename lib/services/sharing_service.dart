@@ -21,12 +21,24 @@ class SharingService {
     return uri.toString();
   }
 
-  /// Share a shortcut with a single clean HTTPS link.
-  static Future<void> shareShortcutWithFallback(LocationShortcut shortcut) async {
+  /// Share a shortcut with a friendly message and a single clean link.
+  ///
+  /// [userName] is the sender's name (from settings). If empty, uses "Someone".
+  static Future<void> shareShortcutWithFallback(
+    LocationShortcut shortcut, {
+    String userName = '',
+  }) async {
     final shareUrl = buildShareUrl(shortcut);
+    final sender = userName.isNotEmpty ? userName : 'Someone';
 
     final message =
-        'Navigate to "${shortcut.label}" with NaviGo!\n\n'
+        '$sender shared a location with you using NaviGo!\n'
+        '\n'
+        'Location: ${shortcut.label}\n'
+        '\n'
+        'Tap the link below to add it to your NaviGo app for one-tap navigation. '
+        'If you don\'t have NaviGo, the link will let you open it directly in Google Maps.\n'
+        '\n'
         '$shareUrl';
 
     await Share.share(message, subject: 'NaviGo: ${shortcut.label}');
