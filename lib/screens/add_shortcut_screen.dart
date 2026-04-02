@@ -81,8 +81,12 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
                     _labelController.text =
                         result.description.split(',').first.trim();
                   }
-                  // Auto-detect icon based on place name
-                  _selectedIcon = autoDetectIcon(result.description);
+                  // Auto-detect icon from label
+                  _selectedIcon = autoDetectIcon(
+                    _labelController.text.isNotEmpty
+                        ? _labelController.text
+                        : result.description.split(',').first.trim(),
+                  );
                 });
               },
             ),

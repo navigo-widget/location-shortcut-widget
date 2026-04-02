@@ -168,6 +168,12 @@
       friend: '\u{1F46B}', family: '\u{1F468}\u200D\u{1F469}\u200D\u{1F467}\u200D\u{1F466}', place: '\u{1F4CD}'
     };
 
+    const DOWNLOAD_URL = 'https://github.com/navigo-widget/location-shortcut-widget/releases/latest/download/app-release.apk';
+
+    function isAndroid() {
+      return /android/i.test(navigator.userAgent);
+    }
+
     function init() {
       const params = new URLSearchParams(window.location.search);
       const label = params.get('label');
@@ -188,18 +194,25 @@
       document.getElementById('place-icon').textContent = iconMap[icon] || '\u{1F4CD}';
       document.getElementById('place-label').textContent = decodeURIComponent(label);
 
-      // Deep link to open in NaviGo app
-      const deepLink = `navigo://add?label=${encodeURIComponent(label)}&lat=${lat}&lng=${lng}&icon=${icon}`;
-      document.getElementById('btn-open-app').href = deepLink;
+      const queryParams = `label=${encodeURIComponent(label)}&lat=${lat}&lng=${lng}&icon=${icon}`;
 
-      // Try to open the app automatically (silently fails if not installed)
-      setTimeout(() => {
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = deepLink;
-        document.body.appendChild(iframe);
-        setTimeout(() => document.body.removeChild(iframe), 2000);
-      }, 500);
+      // On Android Chrome, use an Intent URL that gracefully falls back
+      // to the download page if the app isn't installed.
+      // On other platforms, use the custom scheme directly.
+      if (isAndroid()) {
+        const intentUrl = `intent://add?${queryParams}#Intent;scheme=navigo;package=com.navigo.app;S.browser_fallback_url=${encodeURIComponent(DOWNLOAD_URL)};end`;
+        document.getElementById('btn-open-app').href = intentUrl;
+      } else {
+        const deepLink = `navigo://add?${queryParams}`;
+        document.getElementById('btn-open-app').href = deepLink;
+      }
+
+      // On Android, try to open the app automatically via Intent
+      if (isAndroid()) {
+        setTimeout(() => {
+          window.location.href = document.getElementById('btn-open-app').href;
+        }, 500);
+      }
     }
 
     init();
