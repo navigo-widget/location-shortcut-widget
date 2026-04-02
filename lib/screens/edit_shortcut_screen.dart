@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigo/providers/shortcuts_provider.dart';
 import 'package:navigo/services/sharing_service.dart';
-import 'package:navigo/widgets/icon_picker.dart';
+import 'package:navigo/widgets/icon_picker.dart' show IconPickerCompact;
 
 class EditShortcutScreen extends ConsumerStatefulWidget {
   final String shortcutId;
@@ -112,7 +112,7 @@ class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 12),
-            IconPicker(
+            IconPickerCompact(
               selectedIconName: _selectedIcon,
               onIconSelected: (iconName) {
                 setState(() => _selectedIcon = iconName);

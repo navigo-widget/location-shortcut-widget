@@ -5,20 +5,67 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Forward/play triangle in white behind the pin -->
+    <!-- Outer compass ring -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.18"
+        android:pathData="M54,16c-20.99,0 -38,17.01 -38,38s17.01,38 38,38 38,-17.01 38,-38 -17.01,-38 -38,-38zM54,88c-18.78,0 -34,-15.22 -34,-34s15.22,-34 34,-34 34,15.22 34,34 -15.22,34 -34,34z" />
+
+    <!-- Cardinal tick - North-East (bright, matches arrow direction) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.6"
+        android:pathData="M77.5,25.1 L79.6,27.2 L74.1,32.7 L72,30.6 Z" />
+
+    <!-- Cardinal tick - South-West (dimmer) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.25"
+        android:pathData="M33.9,75.3 L36,77.4 L30.5,82.9 L28.4,80.8 Z" />
+
+    <!-- Cardinal tick - North-West -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.25"
+        android:pathData="M28.4,27.2 L30.5,25.1 L36,30.6 L33.9,32.7 Z" />
+
+    <!-- Cardinal tick - South-East -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.25"
+        android:pathData="M72,77.4 L74.1,75.3 L79.6,80.8 L77.5,82.9 Z" />
+
+    <!-- Navigation arrow - right half (bright white, pointing upper-right) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M73.8,34.2 L59.7,48.3 L62.7,59.7 Z" />
+
+    <!-- Navigation arrow - left half (soft blue) -->
+    <path
+        android:fillColor="#90CAF9"
+        android:pathData="M73.8,34.2 L48.3,59.7 L59.7,48.3 Z" />
+
+    <!-- Arrow tail - right half (faded white) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.35"
+        android:pathData="M34.2,73.8 L48.3,59.7 L45.3,48.3 Z" />
+
+    <!-- Arrow tail - left half (faded blue) -->
+    <path
+        android:fillColor="#90CAF9"
+        android:fillAlpha="0.3"
+        android:pathData="M34.2,73.8 L59.7,48.3 L48.3,59.7 Z" />
+
+    <!-- Center pivot - outer glow -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.15"
+        android:pathData="M54,47c-3.87,0 -7,3.13 -7,7s3.13,7 7,7 7,-3.13 7,-7 -3.13,-7 -7,-7z" />
+
+    <!-- Center pivot - inner dot -->
     <path
         android:fillColor="#FFFFFF"
         android:fillAlpha="0.9"
-        android:pathData="M38,22 L78,54 L38,86 Z" />
-
-    <!-- Location pin in brand blue -->
-    <path
-        android:fillColor="#1A237E"
-        android:pathData="M54,20C44.06,20 36,28.06 36,38c0,15.75 18,39 18,39s18,-23.25 18,-39C72,28.06 63.94,20 54,20zM54,46c-4.42,0 -8,-3.58 -8,-8s3.58,-8 8,-8 8,3.58 8,8 -3.58,8 -8,8z" />
-
-    <!-- Inner circle highlight on pin -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:fillAlpha="0.4"
-        android:pathData="M54,34c-2.21,0 -4,1.79 -4,4s1.79,4 4,4 4,-1.79 4,-4 -1.79,-4 -4,-4z" />
+        android:pathData="M54,50.5c-1.93,0 -3.5,1.57 -3.5,3.5s1.57,3.5 3.5,3.5 3.5,-1.57 3.5,-3.5 -1.57,-3.5 -3.5,-3.5z" />
 </vector>
