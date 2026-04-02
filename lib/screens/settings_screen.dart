@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:navigo/providers/theme_provider.dart';
+import 'package:navigo/services/widget_service.dart';
 
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  bool? _isWidgetPinned;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkWidgetStatus();
+  }
+
+  Future<void> _checkWidgetStatus() async {
+    final pinned = await WidgetService.isWidgetPinned();
+    if (mounted) {
+      setState(() => _isWidgetPinned = pinned);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final currentMode = ref.watch(themeModeProvider);
     final theme = Theme.of(context);
 
@@ -17,6 +38,80 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
+          // Widget section
+          Text(
+            'Home Screen Widget',
+            style: theme.textTheme.titleLarge,
+          ),
+          const SizedBox(height: 12),
+
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(
+                    _isWidgetPinned == true
+                        ? Icons.widgets_rounded
+                        : Icons.widgets_outlined,
+                    size: 32,
+                    color: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _isWidgetPinned == true
+                              ? 'Widget is on home screen'
+                              : 'Widget not added',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: theme.textTheme.bodyLarge?.color,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _isWidgetPinned == true
+                              ? 'Your shortcuts are accessible from the home screen'
+                              : 'Add the widget for one-tap navigation',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (_isWidgetPinned == false)
+                    FilledButton.tonalIcon(
+                      onPressed: () async {
+                        await WidgetService.requestPinWidget();
+                        // Re-check after a short delay to allow the system to process
+                        Future.delayed(const Duration(seconds: 2), () {
+                          _checkWidgetStatus();
+                        });
+                      },
+                      icon: const Icon(Icons.add_rounded, size: 20),
+                      label: const Text('Add'),
+                      style: FilledButton.styleFrom(
+                        minimumSize: Size.zero,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                      ),
+                    ),
+                  if (_isWidgetPinned == true)
+                    const Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 28,
+                    ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 28),
+
           // Appearance section
           Text(
             'Appearance',
@@ -29,7 +124,9 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: 'Follow your device settings',
             icon: Icons.settings_suggest,
             isSelected: currentMode == ThemeMode.system,
-            onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.system),
+            onTap: () => ref
+                .read(themeModeProvider.notifier)
+                .setThemeMode(ThemeMode.system),
           ),
           const SizedBox(height: 8),
           _ThemeOptionTile(
@@ -37,7 +134,9 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: 'Always use light theme',
             icon: Icons.light_mode,
             isSelected: currentMode == ThemeMode.light,
-            onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.light),
+            onTap: () => ref
+                .read(themeModeProvider.notifier)
+                .setThemeMode(ThemeMode.light),
           ),
           const SizedBox(height: 8),
           _ThemeOptionTile(
@@ -45,7 +144,9 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: 'Always use dark theme',
             icon: Icons.dark_mode,
             isSelected: currentMode == ThemeMode.dark,
-            onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark),
+            onTap: () => ref
+                .read(themeModeProvider.notifier)
+                .setThemeMode(ThemeMode.dark),
           ),
 
           const SizedBox(height: 32),
@@ -107,9 +208,7 @@ class _ThemeOptionTile extends StatelessWidget {
     final primaryColor = theme.colorScheme.primary;
 
     return Card(
-      color: isSelected
-          ? primaryColor.withAlpha(25)
-          : theme.cardTheme.color,
+      color: isSelected ? primaryColor.withAlpha(25) : theme.cardTheme.color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: isSelected
@@ -123,7 +222,9 @@ class _ThemeOptionTile extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(icon, size: 32, color: isSelected ? primaryColor : theme.iconTheme.color),
+              Icon(icon,
+                  size: 32,
+                  color: isSelected ? primaryColor : theme.iconTheme.color),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -133,8 +234,11 @@ class _ThemeOptionTile extends StatelessWidget {
                       title,
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                        color: isSelected ? primaryColor : theme.textTheme.bodyLarge?.color,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.w500,
+                        color: isSelected
+                            ? primaryColor
+                            : theme.textTheme.bodyLarge?.color,
                       ),
                     ),
                     Text(
