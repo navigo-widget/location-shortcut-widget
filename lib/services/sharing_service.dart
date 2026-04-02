@@ -30,8 +30,8 @@ class SharingService {
         '\n'
         'Location: ${shortcut.label}\n'
         '\n'
-        'Tap the link below to add it to your NaviGo app for one-tap navigation. '
-        'If you don\'t have NaviGo, the link will let you open it directly in Google Maps.\n'
+        'Tap the link to add it to your NaviGo app for one-tap navigation. '
+        'If you don\'t have NaviGo yet, the link will let you download it for free.\n'
         '\n'
         '$shareUrl';
 

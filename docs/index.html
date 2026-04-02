@@ -45,7 +45,6 @@
     }
     .place-name .icon { font-size: 32px; margin-bottom: 8px; }
     .place-name .name { font-size: 22px; font-weight: 600; color: #1A1A2E; }
-    .place-name .address { font-size: 14px; color: #888; margin-top: 4px; }
     .btn {
       display: block;
       width: 100%;
@@ -64,13 +63,8 @@
       background: #1A237E;
       color: white;
     }
-    .btn-secondary {
-      background: #F5F5FA;
-      color: #1A237E;
-      border: 2px solid #E0E0E0;
-    }
-    .btn-maps {
-      background: #4285F4;
+    .btn-download {
+      background: #2E7D32;
       color: white;
     }
     .divider {
@@ -87,7 +81,25 @@
       background: #E0E0E0;
     }
     .divider span { padding: 0 12px; }
-    .footer { color: #999; font-size: 13px; margin-top: 20px; }
+    .features {
+      text-align: left;
+      margin: 16px 0 8px;
+      padding: 0 8px;
+    }
+    .features li {
+      color: #444;
+      font-size: 15px;
+      margin-bottom: 8px;
+      list-style: none;
+      padding-left: 28px;
+      position: relative;
+    }
+    .features li::before {
+      content: attr(data-icon);
+      position: absolute;
+      left: 0;
+      font-size: 16px;
+    }
     .hidden { display: none; }
     #loading { color: #666; font-size: 16px; padding: 40px 0; }
     #error-state .emoji { font-size: 48px; margin-bottom: 16px; }
@@ -97,7 +109,7 @@
   <div class="card">
     <div class="logo">
       <svg viewBox="0 0 108 108">
-        <path fill="rgba(255,255,255,0.18)" d="M54,16c-20.99,0-38,17.01-38,38s17.01,38,38,38 38-17.01,38-38-17.01-38-38-38zM54,88c-18.78,0-34-15.22-34-34s15.22-34,34-34 34,15.22,34,34-15.22,34-34,34z"/>
+        <path fill="rgba(255,255,255,0.18)" d="M54,16c-20.99,0-38,17.01-38,38s17.01,38,38,38 38-17.01,38-38-17.01-38-38-38zM54,88c-18.78,0-34-15.22-34-34s15.22,-34,34-34 34,15.22,34,34-15.22,34-34,34z"/>
         <polygon fill="#FFFFFF" points="73.8,34.2 59.7,48.3 62.7,59.7"/>
         <polygon fill="#90CAF9" points="73.8,34.2 48.3,59.7 59.7,48.3"/>
         <polygon fill="rgba(255,255,255,0.35)" points="34.2,73.8 48.3,59.7 45.3,48.3"/>
@@ -106,12 +118,12 @@
       </svg>
     </div>
     <h1>NaviGo</h1>
-    <p class="subtitle">One-tap navigation shortcut</p>
+    <p class="subtitle">One-tap navigation for everyone</p>
 
     <!-- Loading state -->
     <div id="loading">Loading...</div>
 
-    <!-- Main content (shown when params are valid) -->
+    <!-- Main content -->
     <div id="main-content" class="hidden">
       <div class="place-name">
         <div class="icon" id="place-icon"></div>
@@ -122,38 +134,38 @@
         Add to NaviGo
       </a>
 
-      <div class="divider"><span>or</span></div>
+      <div class="divider"><span>Don't have NaviGo yet?</span></div>
 
-      <a id="btn-maps" class="btn btn-maps" href="#" target="_blank">
-        Open in Google Maps
+      <a id="btn-download" class="btn btn-download" href="https://github.com/navigo-widget/location-shortcut-widget/releases/latest/download/app-release.apk">
+        Download NaviGo (Free)
       </a>
 
-      <p class="footer">
-        Don't have NaviGo? <a href="#" id="download-link" style="color:#1A237E;font-weight:600;">Download it here</a>
-      </p>
+      <ul class="features">
+        <li data-icon="&#x2705;">Save places as one-tap shortcuts</li>
+        <li data-icon="&#x1F4F1;">Home screen widget for instant access</li>
+        <li data-icon="&#x1F91D;">Share locations with family easily</li>
+        <li data-icon="&#x1F9D3;">Designed for seniors — big buttons, simple UI</li>
+      </ul>
     </div>
 
-    <!-- Error state (shown when params are missing) -->
+    <!-- Error state -->
     <div id="error-state" class="hidden">
-      <div class="emoji">🧭</div>
+      <div class="emoji">&#x1F9ED;</div>
       <p style="color:#666;font-size:16px;margin-bottom:24px;">
         This link doesn't contain a valid location.<br>
         Ask the sender to share it again from NaviGo.
       </p>
-      <a href="https://navigo-widget.github.io" class="btn btn-secondary">
-        Learn about NaviGo
-      </a>
     </div>
   </div>
 
   <script>
     const iconMap = {
-      home: '🏠', hospital: '🏥', bank: '🏦', grocery: '🛒',
-      temple: '🛕', mosque: '🕌', church: '⛪', pharmacy: '💊',
-      restaurant: '🍽️', cafe: '☕', park: '🌳', office: '🏢',
-      school: '🎓', gym: '💪', doctor: '👨‍⚕️', airport: '✈️',
-      train: '🚆', bus: '🚌', petrol: '⛽', market: '🏪',
-      friend: '👫', family: '👨‍👩‍👧‍👦', place: '📍'
+      home: '\u{1F3E0}', hospital: '\u{1F3E5}', bank: '\u{1F3E6}', grocery: '\u{1F6D2}',
+      temple: '\u{1F6D5}', mosque: '\u{1F54C}', church: '\u26EA', pharmacy: '\u{1F48A}',
+      restaurant: '\u{1F37D}\uFE0F', cafe: '\u2615', park: '\u{1F333}', office: '\u{1F3E2}',
+      school: '\u{1F393}', gym: '\u{1F4AA}', doctor: '\u{1F468}\u200D\u2695\uFE0F', airport: '\u2708\uFE0F',
+      train: '\u{1F686}', bus: '\u{1F68C}', petrol: '\u26FD', market: '\u{1F3EA}',
+      friend: '\u{1F46B}', family: '\u{1F468}\u200D\u{1F469}\u200D\u{1F467}\u200D\u{1F466}', place: '\u{1F4CD}'
     };
 
     function init() {
@@ -170,22 +182,17 @@
         return;
       }
 
-      // Show main content
       document.getElementById('main-content').classList.remove('hidden');
 
       // Set place info
-      document.getElementById('place-icon').textContent = iconMap[icon] || '📍';
+      document.getElementById('place-icon').textContent = iconMap[icon] || '\u{1F4CD}';
       document.getElementById('place-label').textContent = decodeURIComponent(label);
 
       // Deep link to open in NaviGo app
       const deepLink = `navigo://add?label=${encodeURIComponent(label)}&lat=${lat}&lng=${lng}&icon=${icon}`;
       document.getElementById('btn-open-app').href = deepLink;
 
-      // Google Maps link
-      const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-      document.getElementById('btn-maps').href = mapsUrl;
-
-      // Try to open the app automatically (will silently fail if not installed)
+      // Try to open the app automatically (silently fails if not installed)
       setTimeout(() => {
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
