@@ -1,54 +1,33 @@
 import 'package:share_plus/share_plus.dart';
 import 'package:navigo/models/shortcut.dart';
 
-/// Shares a shortcut as a deep link via the system share sheet.
+/// Shares a shortcut via a clickable HTTPS link.
 ///
-/// Uses an HTTPS redirect page so the link is clickable in WhatsApp/iMessage.
-/// The page attempts to open the app via custom scheme, and falls back to
-/// Play Store if the app is not installed.
+/// The link points to a GitHub Pages redirect page that:
+/// 1. Tries to open the NaviGo app via custom scheme
+/// 2. Shows a "Open in Google Maps" fallback button
 class SharingService {
-  /// Build a shareable message and open the share sheet.
-  static Future<void> shareShortcut(LocationShortcut shortcut) async {
-    final deepLink = shortcut.toDeepLinkUri();
+  static const _baseUrl = 'https://navigo-widget.github.io';
 
-    // Build an HTML data URI that acts as a redirect page.
-    // When opened in a browser, it tries the custom scheme first,
-    // then falls back to a "copy link" instruction.
-    final redirectUrl = _buildRedirectUrl(deepLink, shortcut.label);
-
-    final message =
-        'I\'m sharing "${shortcut.label}" with you! '
-        'Tap the link to add it to your NaviGo app:\n\n'
-        '$redirectUrl';
-
-    await Share.share(message, subject: 'NaviGo: ${shortcut.label}');
+  /// Build a shareable HTTPS URL for the redirect page.
+  static String buildShareUrl(LocationShortcut shortcut) {
+    final params = {
+      'label': shortcut.label,
+      'lat': shortcut.latitude.toString(),
+      'lng': shortcut.longitude.toString(),
+      'icon': shortcut.iconName,
+    };
+    final uri = Uri.parse(_baseUrl).replace(queryParameters: params);
+    return uri.toString();
   }
 
-  /// Build an HTTPS-based shareable URL.
-  ///
-  /// Since we don't have a hosted domain yet, we encode the deep link
-  /// parameters into a Google Maps fallback URL that is always clickable,
-  /// AND include the custom scheme link separately so the app can intercept.
-  static String _buildRedirectUrl(Uri deepLink, String label) {
-    // Primary: the custom scheme link (works if app is installed and
-    // messaging app supports it)
-    // Fallback: a Google Maps link to the location (always works)
-    //
-    // We share BOTH so at least one is clickable.
-    return deepLink.toString();
-  }
-
-  /// Share with both a clickable HTTPS link and the deep link.
+  /// Share a shortcut with a single clean HTTPS link.
   static Future<void> shareShortcutWithFallback(LocationShortcut shortcut) async {
-    final deepLink = shortcut.toDeepLinkUri().toString();
-    final mapsUrl = shortcut.toGoogleMapsWebUrl();
+    final shareUrl = buildShareUrl(shortcut);
 
     final message =
-        'I\'m sharing "${shortcut.label}" with you!\n\n'
-        'If you have the NaviGo app, tap here:\n'
-        '$deepLink\n\n'
-        'Or open in Google Maps:\n'
-        '$mapsUrl';
+        'Navigate to "${shortcut.label}" with NaviGo!\n\n'
+        '$shareUrl';
 
     await Share.share(message, subject: 'NaviGo: ${shortcut.label}');
   }

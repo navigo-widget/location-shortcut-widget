@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NaviGo - One-tap Navigation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1A237E 0%, #283593 50%, #3949AB 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 40px 32px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: #1A237E;
+      border-radius: 20px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo svg { width: 50px; height: 50px; }
+    h1 { color: #1A237E; font-size: 28px; margin-bottom: 8px; }
+    .subtitle { color: #666; font-size: 16px; margin-bottom: 24px; }
+    .place-name {
+      background: #F5F5FA;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .place-name .icon { font-size: 32px; margin-bottom: 8px; }
+    .place-name .name { font-size: 22px; font-weight: 600; color: #1A1A2E; }
+    .place-name .address { font-size: 14px; color: #888; margin-top: 4px; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-bottom: 12px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: #1A237E;
+      color: white;
+    }
+    .btn-secondary {
+      background: #F5F5FA;
+      color: #1A237E;
+      border: 2px solid #E0E0E0;
+    }
+    .btn-maps {
+      background: #4285F4;
+      color: white;
+    }
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 16px 0;
+      color: #999;
+      font-size: 14px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #E0E0E0;
+    }
+    .divider span { padding: 0 12px; }
+    .footer { color: #999; font-size: 13px; margin-top: 20px; }
+    .hidden { display: none; }
+    #loading { color: #666; font-size: 16px; padding: 40px 0; }
+    #error-state .emoji { font-size: 48px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <svg viewBox="0 0 108 108">
+        <path fill="rgba(255,255,255,0.18)" d="M54,16c-20.99,0-38,17.01-38,38s17.01,38,38,38 38-17.01,38-38-17.01-38-38-38zM54,88c-18.78,0-34-15.22-34-34s15.22-34,34-34 34,15.22,34,34-15.22,34-34,34z"/>
+        <polygon fill="#FFFFFF" points="73.8,34.2 59.7,48.3 62.7,59.7"/>
+        <polygon fill="#90CAF9" points="73.8,34.2 48.3,59.7 59.7,48.3"/>
+        <polygon fill="rgba(255,255,255,0.35)" points="34.2,73.8 48.3,59.7 45.3,48.3"/>
+        <polygon fill="rgba(144,202,249,0.3)" points="34.2,73.8 59.7,48.3 48.3,59.7"/>
+        <circle fill="rgba(255,255,255,0.9)" cx="54" cy="54" r="3.5"/>
+      </svg>
+    </div>
+    <h1>NaviGo</h1>
+    <p class="subtitle">One-tap navigation shortcut</p>
+
+    <!-- Loading state -->
+    <div id="loading">Loading...</div>
+
+    <!-- Main content (shown when params are valid) -->
+    <div id="main-content" class="hidden">
+      <div class="place-name">
+        <div class="icon" id="place-icon"></div>
+        <div class="name" id="place-label"></div>
+      </div>
+
+      <a id="btn-open-app" class="btn btn-primary" href="#">
+        Add to NaviGo
+      </a>
+
+      <div class="divider"><span>or</span></div>
+
+      <a id="btn-maps" class="btn btn-maps" href="#" target="_blank">
+        Open in Google Maps
+      </a>
+
+      <p class="footer">
+        Don't have NaviGo? <a href="#" id="download-link" style="color:#1A237E;font-weight:600;">Download it here</a>
+      </p>
+    </div>
+
+    <!-- Error state (shown when params are missing) -->
+    <div id="error-state" class="hidden">
+      <div class="emoji">🧭</div>
+      <p style="color:#666;font-size:16px;margin-bottom:24px;">
+        This link doesn't contain a valid location.<br>
+        Ask the sender to share it again from NaviGo.
+      </p>
+      <a href="https://navigo-widget.github.io" class="btn btn-secondary">
+        Learn about NaviGo
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const iconMap = {
+      home: '🏠', hospital: '🏥', bank: '🏦', grocery: '🛒',
+      temple: '🛕', mosque: '🕌', church: '⛪', pharmacy: '💊',
+      restaurant: '🍽️', cafe: '☕', park: '🌳', office: '🏢',
+      school: '🎓', gym: '💪', doctor: '👨‍⚕️', airport: '✈️',
+      train: '🚆', bus: '🚌', petrol: '⛽', market: '🏪',
+      friend: '👫', family: '👨‍👩‍👧‍👦', place: '📍'
+    };
+
+    function init() {
+      const params = new URLSearchParams(window.location.search);
+      const label = params.get('label');
+      const lat = params.get('lat');
+      const lng = params.get('lng');
+      const icon = params.get('icon') || 'place';
+
+      document.getElementById('loading').classList.add('hidden');
+
+      if (!label || !lat || !lng) {
+        document.getElementById('error-state').classList.remove('hidden');
+        return;
+      }
+
+      // Show main content
+      document.getElementById('main-content').classList.remove('hidden');
+
+      // Set place info
+      document.getElementById('place-icon').textContent = iconMap[icon] || '📍';
+      document.getElementById('place-label').textContent = decodeURIComponent(label);
+
+      // Deep link to open in NaviGo app
+      const deepLink = `navigo://add?label=${encodeURIComponent(label)}&lat=${lat}&lng=${lng}&icon=${icon}`;
+      document.getElementById('btn-open-app').href = deepLink;
+
+      // Google Maps link
+      const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+      document.getElementById('btn-maps').href = mapsUrl;
+
+      // Try to open the app automatically (will silently fail if not installed)
+      setTimeout(() => {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = deepLink;
+        document.body.appendChild(iframe);
+        setTimeout(() => document.body.removeChild(iframe), 2000);
+      }, 500);
+    }
+
+    init();
+  </script>
+</body>
+</html>
