@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:navigo/providers/shortcuts_provider.dart';
 import 'package:navigo/providers/theme_provider.dart';
+import 'package:navigo/providers/widget_style_provider.dart';
 import 'package:navigo/services/widget_service.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -109,6 +111,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
           ),
+
+          const SizedBox(height: 20),
+
+          // Widget Style section
+          Text(
+            'Widget Style',
+            style: theme.textTheme.titleLarge,
+          ),
+          const SizedBox(height: 12),
+
+          _WidgetStylePicker(),
 
           const SizedBox(height: 28),
 
@@ -252,6 +265,257 @@ class _ThemeOptionTile extends StatelessWidget {
                 Icon(Icons.check_circle, color: primaryColor, size: 28),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WidgetStylePicker extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentStyle = ref.watch(widgetStyleProvider);
+
+    return Row(
+      children: [
+        Expanded(
+          child: _WidgetStyleCard(
+            label: 'Frosted Glass',
+            isSelected: currentStyle == WidgetStyle.frostedGlass,
+            onTap: () async {
+              await ref
+                  .read(widgetStyleProvider.notifier)
+                  .setStyle(WidgetStyle.frostedGlass);
+              // Re-sync widget with new style
+              final shortcuts = ref.read(shortcutsProvider);
+              await WidgetService.syncToWidget(shortcuts,
+                  style: WidgetStyle.frostedGlass);
+            },
+            child: _FrostedGlassPreview(),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _WidgetStyleCard(
+            label: 'Bold Colors',
+            isSelected: currentStyle == WidgetStyle.boldColors,
+            onTap: () async {
+              await ref
+                  .read(widgetStyleProvider.notifier)
+                  .setStyle(WidgetStyle.boldColors);
+              final shortcuts = ref.read(shortcutsProvider);
+              await WidgetService.syncToWidget(shortcuts,
+                  style: WidgetStyle.boldColors);
+            },
+            child: _BoldColorsPreview(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _WidgetStyleCard extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final Widget child;
+
+  const _WidgetStyleCard({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? primaryColor : theme.dividerColor,
+            width: isSelected ? 2.5 : 1,
+          ),
+          color: isSelected
+              ? const Color(0xFFE3F2FD)
+              : theme.cardTheme.color ?? theme.cardColor,
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: SizedBox(
+                height: 90,
+                child: child,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (isSelected)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child:
+                        Icon(Icons.check_circle, color: primaryColor, size: 18),
+                  ),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.w500,
+                    color: isSelected
+                        ? primaryColor
+                        : theme.textTheme.bodyLarge?.color,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Mini frosted-glass widget preview.
+class _FrostedGlassPreview extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      padding: const EdgeInsets.all(6),
+      child: Column(
+        children: [
+          // Title bar
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              width: 36,
+              height: 6,
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(200),
+                borderRadius: BorderRadius.circular(3),
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
+          // 2x2 grid of glass tiles
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(child: _glassTile()),
+                const SizedBox(width: 4),
+                Expanded(child: _glassTile()),
+              ],
+            ),
+          ),
+          const SizedBox(height: 4),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(child: _glassTile()),
+                const SizedBox(width: 4),
+                Expanded(child: _glassTile()),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _glassTile() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha(90),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.white.withAlpha(50)),
+      ),
+      child: Center(
+        child: Container(
+          width: 14,
+          height: 14,
+          decoration: BoxDecoration(
+            color: Colors.white.withAlpha(140),
+            shape: BoxShape.circle,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Mini bold-colors widget preview.
+class _BoldColorsPreview extends StatelessWidget {
+  static const _colors = [
+    Color(0xFF1565C0),
+    Color(0xFF00897B),
+    Color(0xFFE65100),
+    Color(0xFF6A1B9A),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.grey.shade900,
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Column(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(child: _boldTile(_colors[0])),
+                const SizedBox(width: 4),
+                Expanded(child: _boldTile(_colors[1])),
+              ],
+            ),
+          ),
+          const SizedBox(height: 4),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(child: _boldTile(_colors[2])),
+                const SizedBox(width: 4),
+                Expanded(child: _boldTile(_colors[3])),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _boldTile(Color color) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.place,
+          color: Colors.white.withAlpha(200),
+          size: 16,
         ),
       ),
     );

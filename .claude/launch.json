@@ -12,6 +12,12 @@
       "runtimeExecutable": "flutter",
       "runtimeArgs": ["run", "-d", "chrome", "--web-port=3000", "--dart-define=PLACES_API_KEY=${PLACES_API_KEY}"],
       "port": 3000
+    },
+    {
+      "name": "Static Preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8888"],
+      "port": 8888
     }
   ]
 }
