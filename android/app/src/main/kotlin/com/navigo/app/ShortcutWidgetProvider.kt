@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.view.View
 import android.widget.RemoteViews
@@ -14,7 +15,9 @@ import org.json.JSONArray
  * NaviGo home screen widget — displays up to 6 location shortcuts.
  * Each shortcut button directly opens Google Maps navigation.
  *
- * Icons use Material-style vector drawables that match the Flutter app icons.
+ * Supports two visual styles controlled by the `widget_style` shared preference:
+ *   • frostedGlass (default) – translucent glass cards
+ *   • boldColors – vibrant solid-color blocks
  */
 class ShortcutWidgetProvider : HomeWidgetProvider() {
 
@@ -28,6 +31,16 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
             SlotIds(R.id.slot_3, R.id.icon_3, R.id.label_3),
             SlotIds(R.id.slot_4, R.id.icon_4, R.id.label_4),
             SlotIds(R.id.slot_5, R.id.icon_5, R.id.label_5),
+        )
+
+        /** Bold-color palette — one per slot. */
+        private val boldSlotColors = intArrayOf(
+            Color.parseColor("#FF1565C0"), // Blue
+            Color.parseColor("#FF00897B"), // Teal
+            Color.parseColor("#FFE65100"), // Deep Orange
+            Color.parseColor("#FF6A1B9A"), // Purple
+            Color.parseColor("#FF2E7D32"), // Green
+            Color.parseColor("#FFC62828"), // Red
         )
 
         // Map icon names to custom drawable resources (matching Flutter app icons)
@@ -48,8 +61,12 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
         appWidgetIds: IntArray,
         widgetData: android.content.SharedPreferences
     ) {
+        val styleName = widgetData.getString("widget_style", "frostedGlass") ?: "frostedGlass"
+        val isBold = styleName == "boldColors"
+
         for (appWidgetId in appWidgetIds) {
-            val views = RemoteViews(context.packageName, R.layout.shortcut_widget)
+            val layoutRes = if (isBold) R.layout.shortcut_widget_bold else R.layout.shortcut_widget
+            val views = RemoteViews(context.packageName, layoutRes)
 
             val jsonString = widgetData.getString("shortcuts_json", "[]") ?: "[]"
             val shortcuts = JSONArray(jsonString)
@@ -67,6 +84,11 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
                     views.setViewVisibility(slot.container, View.VISIBLE)
                     views.setTextViewText(slot.label, label)
                     views.setImageViewResource(slot.icon, getIconRes(context, iconName))
+
+                    // Apply per-slot color for bold style
+                    if (isBold) {
+                        views.setInt(slot.container, "setBackgroundColor", boldSlotColors[i % boldSlotColors.size])
+                    }
 
                     val navUri = Uri.parse("google.navigation:q=$lat,$lng")
                     val navIntent = Intent(Intent.ACTION_VIEW, navUri).apply {
