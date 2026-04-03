@@ -344,7 +344,7 @@ class _WidgetStyleCard extends StatelessWidget {
             width: isSelected ? 2.5 : 1,
           ),
           color: isSelected
-              ? primaryColor.withAlpha(15)
+              ? const Color(0xFFE3F2FD)
               : theme.cardTheme.color ?? theme.cardColor,
         ),
         padding: const EdgeInsets.all(12),
