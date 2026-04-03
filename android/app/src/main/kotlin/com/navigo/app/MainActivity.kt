@@ -2,6 +2,7 @@ package com.navigo.app
 
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
+import android.content.Intent
 import android.os.Build
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -9,6 +10,12 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.navigo.app/widget"
+
+    // Forward new intents so app_links receives deep links while the app is already running
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

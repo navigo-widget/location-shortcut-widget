@@ -195,23 +195,28 @@
       document.getElementById('place-label').textContent = decodeURIComponent(label);
 
       const queryParams = `label=${encodeURIComponent(label)}&lat=${lat}&lng=${lng}&icon=${icon}`;
+      const deepLink = `navigo://add?${queryParams}`;
 
-      // On Android Chrome, use an Intent URL that gracefully falls back
-      // to the download page if the app isn't installed.
-      // On other platforms, use the custom scheme directly.
-      if (isAndroid()) {
-        const intentUrl = `intent://add?${queryParams}#Intent;scheme=navigo;package=com.navigo.app;S.browser_fallback_url=${encodeURIComponent(DOWNLOAD_URL)};end`;
-        document.getElementById('btn-open-app').href = intentUrl;
-      } else {
-        const deepLink = `navigo://add?${queryParams}`;
-        document.getElementById('btn-open-app').href = deepLink;
-      }
+      // Set button to use the custom scheme directly — works on all platforms
+      const btn = document.getElementById('btn-open-app');
+      btn.href = deepLink;
 
-      // On Android, try to open the app automatically via Intent
+      // On Android, also try an Intent URL as fallback (handles "app not installed")
       if (isAndroid()) {
-        setTimeout(() => {
-          window.location.href = document.getElementById('btn-open-app').href;
-        }, 500);
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          // Try custom scheme first via hidden iframe (avoids page navigation)
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = deepLink;
+          document.body.appendChild(iframe);
+
+          // If the app didn't open after 1.5s, try the Intent URL
+          setTimeout(() => {
+            document.body.removeChild(iframe);
+            window.location.href = `intent://add?${queryParams}#Intent;scheme=navigo;package=com.navigo.app;S.browser_fallback_url=${encodeURIComponent(DOWNLOAD_URL)};end`;
+          }, 1500);
+        });
       }
     }
 
