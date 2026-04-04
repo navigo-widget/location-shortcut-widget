@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetProvider
@@ -18,6 +19,8 @@ import org.json.JSONArray
  * Supports two visual styles controlled by the `widget_style` shared preference:
  *   • frostedGlass (default) – translucent glass cards
  *   • boldColors – vibrant solid-color blocks
+ *
+ * The widget is fully resizable — icons and layout adapt to the widget boundaries.
  */
 class ShortcutWidgetProvider : HomeWidgetProvider() {
 
@@ -53,18 +56,11 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
                 if (fallback != 0) fallback else android.R.drawable.ic_menu_mylocation
             }
         }
-    }
 
-    override fun onUpdate(
-        context: Context,
-        appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray,
-        widgetData: android.content.SharedPreferences
-    ) {
-        val styleName = widgetData.getString("widget_style", "frostedGlass") ?: "frostedGlass"
-        val isBold = styleName == "boldColors"
+        fun buildRemoteViews(context: Context, widgetData: android.content.SharedPreferences): RemoteViews {
+            val styleName = widgetData.getString("widget_style", "frostedGlass") ?: "frostedGlass"
+            val isBold = styleName == "boldColors"
 
-        for (appWidgetId in appWidgetIds) {
             val layoutRes = if (isBold) R.layout.shortcut_widget_bold else R.layout.shortcut_widget
             val views = RemoteViews(context.packageName, layoutRes)
 
@@ -106,7 +102,33 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
                 }
             }
 
+            return views
+        }
+    }
+
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray,
+        widgetData: android.content.SharedPreferences
+    ) {
+        for (appWidgetId in appWidgetIds) {
+            val views = buildRemoteViews(context, widgetData)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
+    }
+
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: Bundle
+    ) {
+        // Re-render the widget when the user resizes it.
+        // The layout uses weight-based sizing so icons and cells
+        // automatically scale to fill the new boundaries.
+        val prefs = context.getSharedPreferences("HomeWidgetPreferences", Context.MODE_PRIVATE)
+        val views = buildRemoteViews(context, prefs)
+        appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 }

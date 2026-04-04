@@ -27,7 +27,7 @@
     <!-- Shortcut grid (2 columns, up to 3 rows = 6 shortcuts max) -->
     <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:columnCount="2"
         android:rowCount="3"
         android:useDefaultMargins="true">
@@ -36,27 +36,32 @@
         <LinearLayout
             android:id="@+id/slot_0"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="8dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_0"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
                 android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_0"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#DD000000"
                 android:maxLines="1"
+                android:gravity="center"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />
         </LinearLayout>
@@ -65,27 +70,32 @@
         <LinearLayout
             android:id="@+id/slot_1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="8dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_1"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
                 android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#DD000000"
                 android:maxLines="1"
+                android:gravity="center"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />
         </LinearLayout>
@@ -94,27 +104,32 @@
         <LinearLayout
             android:id="@+id/slot_2"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="8dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_2"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
                 android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_2"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#DD000000"
                 android:maxLines="1"
+                android:gravity="center"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />
         </LinearLayout>
@@ -123,27 +138,32 @@
         <LinearLayout
             android:id="@+id/slot_3"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="8dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_3"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
                 android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_3"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#DD000000"
                 android:maxLines="1"
+                android:gravity="center"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />
         </LinearLayout>
@@ -152,27 +172,32 @@
         <LinearLayout
             android:id="@+id/slot_4"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="8dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_4"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
                 android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#DD000000"
                 android:maxLines="1"
+                android:gravity="center"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />
         </LinearLayout>
@@ -181,27 +206,32 @@
         <LinearLayout
             android:id="@+id/slot_5"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
             android:orientation="vertical"
             android:gravity="center"
-            android:padding="10dp"
+            android:padding="8dp"
             android:background="@drawable/widget_button_bg"
             android:visibility="gone">
             <ImageView
                 android:id="@+id/icon_5"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
                 android:tint="#FF1A237E"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_5"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#DD000000"
                 android:maxLines="1"
+                android:gravity="center"
                 android:ellipsize="end"
                 android:paddingTop="4dp" />
         </LinearLayout>

@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Translucent glass-style widget background -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <solid android:color="#33FFFFFF" />
-    <corners android:radius="24dp" />
-    <stroke
-        android:width="1dp"
-        android:color="#22FFFFFF" />
-</shape>
+<!-- Frosted glass widget background with layered translucency -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Outer frosted layer -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#66FFFFFF" />
+            <corners android:radius="28dp" />
+        </shape>
+    </item>
+    <!-- Inner subtle gradient for depth -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#33FFFFFF"
+                android:endColor="#11FFFFFF"
+                android:angle="135" />
+            <corners android:radius="28dp" />
+        </shape>
+    </item>
+    <!-- Border highlight for glass edge -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#00000000" />
+            <corners android:radius="28dp" />
+            <stroke
+                android:width="1dp"
+                android:color="#55FFFFFF" />
+        </shape>
+    </item>
+</layer-list>
