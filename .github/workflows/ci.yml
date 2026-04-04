@@ -42,6 +42,12 @@ jobs:
       - name: Build APK
         run: flutter build apk --release --target-platform android-arm64 --dart-define=PLACES_API_KEY=${{ secrets.PLACES_API_KEY }}
 
+      - name: Extract APK signing fingerprint
+        run: |
+          FINGERPRINT=$(keytool -printcert -jarfile build/app/outputs/flutter-apk/app-release.apk | grep "SHA256:" | awk '{print $2}')
+          echo "APK_FINGERPRINT=$FINGERPRINT" >> $GITHUB_ENV
+          echo "APK signing SHA-256: $FINGERPRINT"
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:

@@ -67,20 +67,12 @@
       background: #2E7D32;
       color: white;
     }
-    .divider {
-      display: flex;
-      align-items: center;
-      margin: 16px 0;
-      color: #999;
-      font-size: 14px;
+    .status-msg {
+      color: #666;
+      font-size: 15px;
+      margin-bottom: 20px;
+      line-height: 1.5;
     }
-    .divider::before, .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: #E0E0E0;
-    }
-    .divider span { padding: 0 12px; }
     .features {
       text-align: left;
       margin: 16px 0 8px;
@@ -121,20 +113,23 @@
     <p class="subtitle">One-tap navigation for everyone</p>
 
     <!-- Loading state -->
-    <div id="loading">Loading...</div>
+    <div id="loading">Opening NaviGo...</div>
 
-    <!-- Main content -->
-    <div id="main-content" class="hidden">
+    <!-- Fallback content: shown only if the app didn't open -->
+    <div id="fallback-content" class="hidden">
       <div class="place-name">
         <div class="icon" id="place-icon"></div>
         <div class="name" id="place-label"></div>
       </div>
 
-      <a id="btn-open-app" class="btn btn-primary" href="#">
-        Add to NaviGo
-      </a>
+      <p class="status-msg" id="status-msg">
+        It looks like NaviGo isn't installed yet.<br>
+        Download it to add this location.
+      </p>
 
-      <div class="divider"><span>Don't have NaviGo yet?</span></div>
+      <a id="btn-open-app" class="btn btn-primary" href="#">
+        Open in NaviGo
+      </a>
 
       <a id="btn-download" class="btn btn-download" href="https://github.com/navigo-widget/location-shortcut-widget/releases/latest/download/app-release.apk">
         Download NaviGo (Free)
@@ -144,7 +139,7 @@
         <li data-icon="&#x2705;">Save places as one-tap shortcuts</li>
         <li data-icon="&#x1F4F1;">Home screen widget for instant access</li>
         <li data-icon="&#x1F91D;">Share locations with family easily</li>
-        <li data-icon="&#x1F9D3;">Designed for seniors — big buttons, simple UI</li>
+        <li data-icon="&#x1F9D3;">Designed for seniors &mdash; big buttons, simple UI</li>
       </ul>
     </div>
 
@@ -181,31 +176,41 @@
       const lng = params.get('lng');
       const icon = params.get('icon') || 'place';
 
-      document.getElementById('loading').classList.add('hidden');
-
       if (!label || !lat || !lng) {
+        document.getElementById('loading').classList.add('hidden');
         document.getElementById('error-state').classList.remove('hidden');
         return;
       }
 
-      document.getElementById('main-content').classList.remove('hidden');
-
-      // Set place info
-      document.getElementById('place-icon').textContent = iconMap[icon] || '\u{1F4CD}';
-      document.getElementById('place-label').textContent = decodeURIComponent(label);
-
       const queryParams = `label=${encodeURIComponent(label)}&lat=${lat}&lng=${lng}&icon=${icon}`;
+      const intentUrl = `intent://add?${queryParams}#Intent;scheme=navigo;package=com.navigo.app;end`;
+      const deepLink = `navigo://add?${queryParams}`;
 
-      // Use Android Intent URL — the only consistently reliable way to open
-      // a custom-scheme link from Chrome. Chrome handles the intent natively
-      // on a direct <a> tap: opens the app if installed, otherwise redirects
-      // to the fallback URL. No JS hacks needed.
-      const btn = document.getElementById('btn-open-app');
+      // Immediately try to open the app.
+      // On Android Chrome, use Intent URL which is handled natively.
+      // The browser will open the app if installed, or stay on this page if not.
       if (isAndroid()) {
-        btn.href = `intent://add?${queryParams}#Intent;scheme=navigo;package=com.navigo.app;S.browser_fallback_url=${encodeURIComponent(DOWNLOAD_URL)};end`;
+        window.location.href = intentUrl;
       } else {
-        btn.href = `navigo://add?${queryParams}`;
+        window.location.href = deepLink;
       }
+
+      // After a short delay, if we're still on this page, the app didn't open.
+      // Show the fallback UI with download button.
+      setTimeout(function() {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('fallback-content').classList.remove('hidden');
+
+        document.getElementById('place-icon').textContent = iconMap[icon] || '\u{1F4CD}';
+        document.getElementById('place-label').textContent = decodeURIComponent(label);
+
+        var btn = document.getElementById('btn-open-app');
+        if (isAndroid()) {
+          btn.href = intentUrl;
+        } else {
+          btn.href = deepLink;
+        }
+      }, 1500);
     }
 
     init();

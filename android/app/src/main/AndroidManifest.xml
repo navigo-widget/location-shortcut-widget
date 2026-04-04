@@ -35,7 +35,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Deep link intent filter for receiving shared shortcuts -->
+            <!-- Deep link: custom scheme (from Intent URLs) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -44,6 +44,18 @@
                     android:scheme="navigo"
                     android:host="add" />
             </intent-filter>
+
+            <!-- App Link: verified HTTPS link opens the app directly,
+                 bypassing the browser. Android verifies ownership via
+                 /.well-known/assetlinks.json on the domain. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="navigo-widget.github.io" />
+            </intent-filter>
         </activity>
 
         <!-- Required: declare Flutter v2 embedding -->
@@ -51,7 +63,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- Opt out of Flutter's default deep link handler (required for app_links) -->
+        <!-- Disable Flutter's built-in deep link handler; app_links handles it instead -->
         <meta-data
             android:name="flutter_deeplinking_enabled"
             android:value="false" />
