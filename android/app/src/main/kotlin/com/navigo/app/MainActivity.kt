@@ -56,15 +56,30 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun handleIntent(intent: Intent?) {
-        val uri = intent?.data?.toString() ?: return
-        if (!uri.startsWith("navigo://")) return
+        val data = intent?.data ?: return
+        val uri = data.toString()
+
+        // Accept navigo:// custom scheme deep links
+        // AND https://navigo-widget.github.io App Links (verified HTTPS)
+        val isCustomScheme = uri.startsWith("navigo://")
+        val isAppLink = uri.startsWith("https://navigo-widget.github.io")
+
+        if (!isCustomScheme && !isAppLink) return
+
+        // For HTTPS App Links, convert to navigo:// so Flutter handles them uniformly
+        val deepLinkUri = if (isAppLink) {
+            val params = data.query ?: ""
+            "navigo://add?$params"
+        } else {
+            uri
+        }
 
         val sink = deepLinkSink
         if (sink != null) {
-            sink.success(uri)
+            sink.success(deepLinkUri)
         } else {
             // Flutter not ready yet — buffer it
-            pendingDeepLink = uri
+            pendingDeepLink = deepLinkUri
         }
         // Clear the intent data so it doesn't fire again on config change
         intent.data = null
