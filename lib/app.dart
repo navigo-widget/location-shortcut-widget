@@ -60,15 +60,23 @@ class _AppState extends ConsumerState<App> {
   void initState() {
     super.initState();
     _deepLinkService = DeepLinkService();
-    _initDeepLinks();
+    // Delay deep link init until after the first frame so the router
+    // and Navigator are fully mounted — avoids the race condition where
+    // getInitialLink() resolves before the widget tree is ready.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initDeepLinks();
+    });
   }
 
-  Future<void> _initDeepLinks() async {
+  void _initDeepLinks() {
     final router = ref.read(routerProvider);
 
     _deepLinkService.init(
       onShortcutReceived: (shortcut) {
-        router.push('/confirm-add', extra: shortcut);
+        // Use Future.microtask to ensure we're not in a build phase
+        Future.microtask(() {
+          router.push('/confirm-add', extra: shortcut);
+        });
       },
     );
   }
