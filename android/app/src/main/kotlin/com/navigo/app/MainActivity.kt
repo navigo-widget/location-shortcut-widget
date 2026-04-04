@@ -6,42 +6,74 @@ import android.content.Intent
 import android.os.Build
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
-    private val CHANNEL = "com.navigo.app/widget"
+    private val WIDGET_CHANNEL = "com.navigo.app/widget"
+    private val DEEPLINK_CHANNEL = "com.navigo.app/deeplink"
 
-    // Forward new intents so app_links receives deep links while the app is already running
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        setIntent(intent)
-    }
+    private var deepLinkSink: EventChannel.EventSink? = null
+    private var pendingDeepLink: String? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+        // Widget method channel
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, WIDGET_CHANNEL)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
-                    "requestPinWidget" -> {
-                        val success = requestPinWidget()
-                        result.success(success)
-                    }
-                    "isWidgetPinned" -> {
-                        val pinned = isWidgetPinned()
-                        result.success(pinned)
-                    }
+                    "requestPinWidget" -> result.success(requestPinWidget())
+                    "isWidgetPinned" -> result.success(isWidgetPinned())
                     else -> result.notImplemented()
                 }
             }
+
+        // Deep link event channel — streams URIs to Flutter
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, DEEPLINK_CHANNEL)
+            .setStreamHandler(object : EventChannel.StreamHandler {
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                    deepLinkSink = events
+                    // Flush any link that arrived before Flutter was ready
+                    pendingDeepLink?.let {
+                        events?.success(it)
+                        pendingDeepLink = null
+                    }
+                }
+                override fun onCancel(arguments: Any?) {
+                    deepLinkSink = null
+                }
+            })
+
+        // Handle the intent that launched the activity (cold start)
+        handleIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        val uri = intent?.data?.toString() ?: return
+        if (!uri.startsWith("navigo://")) return
+
+        val sink = deepLinkSink
+        if (sink != null) {
+            sink.success(uri)
+        } else {
+            // Flutter not ready yet — buffer it
+            pendingDeepLink = uri
+        }
+        // Clear the intent data so it doesn't fire again on config change
+        intent.data = null
     }
 
     private fun requestPinWidget(): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
-
         val appWidgetManager = getSystemService(AppWidgetManager::class.java) ?: return false
         if (!appWidgetManager.isRequestPinAppWidgetSupported) return false
-
         val widgetProvider = ComponentName(this, ShortcutWidgetProvider::class.java)
         return appWidgetManager.requestPinAppWidget(widgetProvider, null, null)
     }
