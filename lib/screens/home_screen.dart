@@ -40,6 +40,52 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // Show the prompt
     _showWidgetPromptDialog();
+
+    // Also check App Links after a short delay
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) _checkAppLinkPrompt(box);
+    });
+  }
+
+  Future<void> _checkAppLinkPrompt(Box box) async {
+    final hasPrompted = box.get('applink_prompt_shown', defaultValue: false) as bool;
+    if (hasPrompted || !mounted) return;
+
+    final verified = await WidgetService.isAppLinkVerified();
+    if (verified || !mounted) return;
+
+    await box.put('applink_prompt_shown', true);
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enable direct link opening?'),
+        content: const Text(
+          'When someone shares a location with you, it can open '
+          'directly in NaviGo instead of the browser.\n\n'
+          'Tap "Open Settings", then enable "Open supported links".',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Not now'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+              WidgetService.openAppLinkSettings();
+            },
+            icon: const Icon(Icons.settings, size: 20),
+            label: const Text('Open Settings'),
+            style: ElevatedButton.styleFrom(
+              minimumSize: Size.zero,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showWidgetPromptDialog() {

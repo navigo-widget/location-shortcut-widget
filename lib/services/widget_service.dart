@@ -47,4 +47,33 @@ class WidgetService {
       return false;
     }
   }
+
+  /// Check if Android App Links are verified for our domain.
+  /// When verified, shared links open NaviGo directly (no browser).
+  static Future<bool> isAppLinkVerified() async {
+    try {
+      final result = await _channel.invokeMethod<bool>('isAppLinkVerified');
+      return result ?? false;
+    } on PlatformException {
+      return false;
+    }
+  }
+
+  /// Open the system "Open by default" settings for this app.
+  static Future<void> openAppLinkSettings() async {
+    try {
+      await _channel.invokeMethod<bool>('openAppLinkSettings');
+    } on PlatformException {
+      // Ignore — older Android versions don't support this
+    }
+  }
+
+  /// Get the signing fingerprint of the installed APK (for assetlinks.json).
+  static Future<String?> getSigningFingerprint() async {
+    try {
+      return await _channel.invokeMethod<String>('getSigningFingerprint');
+    } on PlatformException {
+      return null;
+    }
+  }
 }
