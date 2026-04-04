@@ -195,28 +195,16 @@
       document.getElementById('place-label').textContent = decodeURIComponent(label);
 
       const queryParams = `label=${encodeURIComponent(label)}&lat=${lat}&lng=${lng}&icon=${icon}`;
-      const deepLink = `navigo://add?${queryParams}`;
 
-      // Set button to use the custom scheme directly — works on all platforms
+      // Use Android Intent URL — the only consistently reliable way to open
+      // a custom-scheme link from Chrome. Chrome handles the intent natively
+      // on a direct <a> tap: opens the app if installed, otherwise redirects
+      // to the fallback URL. No JS hacks needed.
       const btn = document.getElementById('btn-open-app');
-      btn.href = deepLink;
-
-      // On Android, also try an Intent URL as fallback (handles "app not installed")
       if (isAndroid()) {
-        btn.addEventListener('click', function(e) {
-          e.preventDefault();
-          // Try custom scheme first via hidden iframe (avoids page navigation)
-          const iframe = document.createElement('iframe');
-          iframe.style.display = 'none';
-          iframe.src = deepLink;
-          document.body.appendChild(iframe);
-
-          // If the app didn't open after 1.5s, try the Intent URL
-          setTimeout(() => {
-            document.body.removeChild(iframe);
-            window.location.href = `intent://add?${queryParams}#Intent;scheme=navigo;package=com.navigo.app;S.browser_fallback_url=${encodeURIComponent(DOWNLOAD_URL)};end`;
-          }, 1500);
-        });
+        btn.href = `intent://add?${queryParams}#Intent;scheme=navigo;package=com.navigo.app;S.browser_fallback_url=${encodeURIComponent(DOWNLOAD_URL)};end`;
+      } else {
+        btn.href = `navigo://add?${queryParams}`;
       }
     }
 
