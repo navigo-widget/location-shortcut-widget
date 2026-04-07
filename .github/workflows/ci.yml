@@ -10,6 +10,8 @@ jobs:
   test:
     name: Test & Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -40,8 +42,27 @@ jobs:
       - name: Build APK
         run: flutter build apk --release --target-platform android-arm64 --dart-define=PLACES_API_KEY=${{ secrets.PLACES_API_KEY }}
 
-      - name: Upload APK
+      - name: Extract APK signing fingerprint
+        run: |
+          FINGERPRINT=$(keytool -printcert -jarfile build/app/outputs/flutter-apk/app-release.apk | grep "SHA256:" | awk '{print $2}')
+          echo "APK_FINGERPRINT=$FINGERPRINT" >> $GITHUB_ENV
+          echo "APK signing SHA-256: $FINGERPRINT"
+
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Update latest release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Build
+          body: |
+            Latest NaviGo APK build from main branch.
+            Download and install on any modern Android phone (arm64).
+          files: build/app/outputs/flutter-apk/app-release.apk
+          prerelease: false
+          make_latest: true

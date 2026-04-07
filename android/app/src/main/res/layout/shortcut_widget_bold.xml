@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bold color blocks widget layout -->
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:columnCount="2"
+    android:rowCount="3"
+    android:padding="4dp"
+    android:useDefaultMargins="true">
+
+    <!-- Slot 1 -->
+    <LinearLayout
+        android:id="@+id/slot_0"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="@drawable/widget_bold_bg"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/icon_0"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:tint="#FFFFFFFF"
+            android:src="@android:drawable/ic_menu_mylocation" />
+        <TextView
+            android:id="@+id/label_0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFFFF"
+            android:shadowColor="#44000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingTop="6dp" />
+    </LinearLayout>
+
+    <!-- Slot 2 -->
+    <LinearLayout
+        android:id="@+id/slot_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="@drawable/widget_bold_bg"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/icon_1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:tint="#FFFFFFFF"
+            android:src="@android:drawable/ic_menu_mylocation" />
+        <TextView
+            android:id="@+id/label_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFFFF"
+            android:shadowColor="#44000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingTop="6dp" />
+    </LinearLayout>
+
+    <!-- Slot 3 -->
+    <LinearLayout
+        android:id="@+id/slot_2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="@drawable/widget_bold_bg"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/icon_2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:tint="#FFFFFFFF"
+            android:src="@android:drawable/ic_menu_mylocation" />
+        <TextView
+            android:id="@+id/label_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFFFF"
+            android:shadowColor="#44000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingTop="6dp" />
+    </LinearLayout>
+
+    <!-- Slot 4 -->
+    <LinearLayout
+        android:id="@+id/slot_3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="@drawable/widget_bold_bg"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/icon_3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:tint="#FFFFFFFF"
+            android:src="@android:drawable/ic_menu_mylocation" />
+        <TextView
+            android:id="@+id/label_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFFFF"
+            android:shadowColor="#44000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingTop="6dp" />
+    </LinearLayout>
+
+    <!-- Slot 5 -->
+    <LinearLayout
+        android:id="@+id/slot_4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="@drawable/widget_bold_bg"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/icon_4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:tint="#FFFFFFFF"
+            android:src="@android:drawable/ic_menu_mylocation" />
+        <TextView
+            android:id="@+id/label_4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFFFF"
+            android:shadowColor="#44000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingTop="6dp" />
+    </LinearLayout>
+
+    <!-- Slot 6 -->
+    <LinearLayout
+        android:id="@+id/slot_5"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_columnWeight="1"
+        android:layout_rowWeight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="@drawable/widget_bold_bg"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/icon_5"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:tint="#FFFFFFFF"
+            android:src="@android:drawable/ic_menu_mylocation" />
+        <TextView
+            android:id="@+id/label_5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFFFF"
+            android:shadowColor="#44000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingTop="6dp" />
+    </LinearLayout>
+
+</GridLayout>

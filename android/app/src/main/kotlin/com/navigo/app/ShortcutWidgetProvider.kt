@@ -4,7 +4,9 @@ import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
+import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetProvider
@@ -14,7 +16,11 @@ import org.json.JSONArray
  * NaviGo home screen widget — displays up to 6 location shortcuts.
  * Each shortcut button directly opens Google Maps navigation.
  *
- * Icons use Material-style vector drawables that match the Flutter app icons.
+ * Supports two visual styles controlled by the `widget_style` shared preference:
+ *   • frostedGlass (default) – translucent glass cards
+ *   • boldColors – vibrant solid-color blocks
+ *
+ * The widget is fully resizable — icons and layout adapt to the widget boundaries.
  */
 class ShortcutWidgetProvider : HomeWidgetProvider() {
 
@@ -30,6 +36,16 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
             SlotIds(R.id.slot_5, R.id.icon_5, R.id.label_5),
         )
 
+        /** Bold-color palette — one per slot. */
+        private val boldSlotColors = intArrayOf(
+            Color.parseColor("#FF1565C0"), // Blue
+            Color.parseColor("#FF00897B"), // Teal
+            Color.parseColor("#FFE65100"), // Deep Orange
+            Color.parseColor("#FF6A1B9A"), // Purple
+            Color.parseColor("#FF2E7D32"), // Green
+            Color.parseColor("#FFC62828"), // Red
+        )
+
         // Map icon names to custom drawable resources (matching Flutter app icons)
         private fun getIconRes(context: Context, iconName: String): Int {
             val resName = "ic_shortcut_$iconName"
@@ -40,16 +56,13 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
                 if (fallback != 0) fallback else android.R.drawable.ic_menu_mylocation
             }
         }
-    }
 
-    override fun onUpdate(
-        context: Context,
-        appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray,
-        widgetData: android.content.SharedPreferences
-    ) {
-        for (appWidgetId in appWidgetIds) {
-            val views = RemoteViews(context.packageName, R.layout.shortcut_widget)
+        fun buildRemoteViews(context: Context, widgetData: android.content.SharedPreferences): RemoteViews {
+            val styleName = widgetData.getString("widget_style", "frostedGlass") ?: "frostedGlass"
+            val isBold = styleName == "boldColors"
+
+            val layoutRes = if (isBold) R.layout.shortcut_widget_bold else R.layout.shortcut_widget
+            val views = RemoteViews(context.packageName, layoutRes)
 
             val jsonString = widgetData.getString("shortcuts_json", "[]") ?: "[]"
             val shortcuts = JSONArray(jsonString)
@@ -68,6 +81,11 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
                     views.setTextViewText(slot.label, label)
                     views.setImageViewResource(slot.icon, getIconRes(context, iconName))
 
+                    // Apply per-slot color for bold style
+                    if (isBold) {
+                        views.setInt(slot.container, "setBackgroundColor", boldSlotColors[i % boldSlotColors.size])
+                    }
+
                     val navUri = Uri.parse("google.navigation:q=$lat,$lng")
                     val navIntent = Intent(Intent.ACTION_VIEW, navUri).apply {
                         setPackage("com.google.android.apps.maps")
@@ -84,7 +102,33 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
                 }
             }
 
+            return views
+        }
+    }
+
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray,
+        widgetData: android.content.SharedPreferences
+    ) {
+        for (appWidgetId in appWidgetIds) {
+            val views = buildRemoteViews(context, widgetData)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
+    }
+
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: Bundle
+    ) {
+        // Re-render the widget when the user resizes it.
+        // The layout uses weight-based sizing so icons and cells
+        // automatically scale to fill the new boundaries.
+        val prefs = context.getSharedPreferences("HomeWidgetPreferences", Context.MODE_PRIVATE)
+        val views = buildRemoteViews(context, prefs)
+        appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 }

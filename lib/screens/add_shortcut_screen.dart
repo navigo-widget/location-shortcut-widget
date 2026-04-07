@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:navigo/models/shortcut.dart';
 import 'package:navigo/providers/shortcuts_provider.dart';
 import 'package:navigo/utils/shortcut_icons.dart';
-import 'package:navigo/widgets/icon_picker.dart';
+import 'package:navigo/widgets/icon_picker.dart' show IconPickerCompact;
 import 'package:navigo/widgets/place_search_field.dart';
 
 class AddShortcutScreen extends ConsumerStatefulWidget {
@@ -18,6 +18,7 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
   final _labelController = TextEditingController();
   PlaceResult? _selectedPlace;
   String _selectedIcon = 'place';
+  bool _iconManuallyChanged = false;
   bool _isSaving = false;
 
   @override
@@ -80,8 +81,12 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
                     _labelController.text =
                         result.description.split(',').first.trim();
                   }
-                  // Auto-detect icon based on place name
-                  _selectedIcon = autoDetectIcon(result.description);
+                  // Auto-detect icon from label
+                  _selectedIcon = autoDetectIcon(
+                    _labelController.text.isNotEmpty
+                        ? _labelController.text
+                        : result.description.split(',').first.trim(),
+                  );
                 });
               },
             ),
@@ -125,24 +130,36 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
                 hintText: 'e.g. City Hospital',
                 labelText: 'Shortcut Name',
               ),
-              onChanged: (_) => setState(() {}),
+              onChanged: (value) {
+                setState(() {
+                  // Re-detect icon from label if user hasn't manually picked one
+                  if (!_iconManuallyChanged && value.trim().isNotEmpty) {
+                    _selectedIcon = autoDetectIcon(value);
+                  }
+                });
+              },
               textCapitalization: TextCapitalization.words,
             ),
 
-            const SizedBox(height: 28),
+            if (_selectedPlace != null) ...[
+              const SizedBox(height: 28),
 
-            // Step 3: Choose an icon
-            Text(
-              'Step 3: Choose an icon',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 12),
-            IconPicker(
-              selectedIconName: _selectedIcon,
-              onIconSelected: (iconName) {
-                setState(() => _selectedIcon = iconName);
-              },
-            ),
+              // Step 3: Icon (auto-detected)
+              Text(
+                'Step 3: Icon',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              IconPickerCompact(
+                selectedIconName: _selectedIcon,
+                onIconSelected: (iconName) {
+                  setState(() {
+                    _selectedIcon = iconName;
+                    _iconManuallyChanged = true;
+                  });
+                },
+              ),
+            ],
 
             const SizedBox(height: 40),
 

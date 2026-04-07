@@ -136,12 +136,12 @@ ShortcutIconData getShortcutIcon(String iconName) {
   return shortcutIcons[iconName] ?? shortcutIcons['place']!;
 }
 
-/// Auto-detect the best icon based on a place name/address.
+/// Auto-detect the best icon based on the shortcut label.
 /// Returns the icon key (e.g. 'hospital', 'bank').
-String autoDetectIcon(String placeName) {
-  final lower = placeName.toLowerCase();
+String autoDetectIcon(String label) {
+  final lower = label.toLowerCase();
 
-  final patterns = <String, List<String>>{
+  const patterns = <String, List<String>>{
     'hospital': ['hospital', 'medical center', 'clinic', 'health center', 'emergency'],
     'doctor': ['doctor', 'dr.', 'physician', 'dentist', 'dental'],
     'pharmacy': ['pharmacy', 'chemist', 'drugstore', 'medical store', 'medicine'],

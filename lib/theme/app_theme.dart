@@ -191,16 +191,16 @@ class AppTheme {
     );
   }
 
-  static CardTheme _cardTheme() {
-    return CardTheme(
+  static CardThemeData _cardTheme() {
+    return CardThemeData(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       margin: const EdgeInsets.all(8),
     );
   }
 
-  static CardTheme _cardThemeDark() {
-    return CardTheme(
+  static CardThemeData _cardThemeDark() {
+    return CardThemeData(
       elevation: 3,
       color: const Color(0xFF1E1E2E),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -208,8 +208,8 @@ class AppTheme {
     );
   }
 
-  static DialogTheme _dialogTheme(Color textColor) {
-    return DialogTheme(
+  static DialogThemeData _dialogTheme(Color textColor) {
+    return DialogThemeData(
       titleTextStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor),
       contentTextStyle: TextStyle(fontSize: 18, color: textColor),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
