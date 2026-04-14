@@ -11,6 +11,8 @@ import android.view.View
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetProvider
 import org.json.JSONArray
+import kotlin.math.ceil
+import kotlin.math.min
 
 /**
  * NaviGo home screen widget — displays up to 6 location shortcuts.
@@ -21,10 +23,14 @@ import org.json.JSONArray
  *   • boldColors – vibrant solid-color blocks
  *
  * The widget is fully resizable — icons and layout adapt to the widget boundaries.
+ * Tiles are kept square and capped at a maximum size.
  */
 class ShortcutWidgetProvider : HomeWidgetProvider() {
 
     companion object {
+        private const val MAX_CELL_DP = 120f
+        private const val GRID_GAP_DP = 4f
+
         private data class SlotIds(val container: Int, val icon: Int, val label: Int)
 
         private val slots = listOf(
@@ -57,7 +63,59 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
             }
         }
 
-        fun buildRemoteViews(context: Context, widgetData: android.content.SharedPreferences): RemoteViews {
+        /**
+         * Apply padding to the grid so tiles remain square and don't exceed [MAX_CELL_DP].
+         *
+         * The grid uses weight-based sizing so cells fill all available space. By adding
+         * symmetric padding we shrink the available area until each cell is square and
+         * within the max size.
+         */
+        private fun applySquareTilePadding(
+            context: Context,
+            views: RemoteViews,
+            widthDp: Int,
+            heightDp: Int,
+            visibleCount: Int,
+            isBold: Boolean
+        ) {
+            if (widthDp <= 0 || heightDp <= 0 || visibleCount <= 0) return
+
+            val density = context.resources.displayMetrics.density
+            val numRows = ceil(visibleCount / 2.0).toInt()
+
+            // Existing outer padding around the grid
+            val outerPadDp = if (isBold) 4f else 12f
+            // Approximate title height for the glass widget
+            val titleDp = if (isBold) 0f else 36f
+
+            val gridW = widthDp - outerPadDp * 2
+            val gridH = heightDp - outerPadDp * 2 - titleDp
+
+            val cellW = (gridW - GRID_GAP_DP) / 2f
+            val cellH = (gridH - GRID_GAP_DP * (numRows - 1)) / numRows
+
+            // Target: smallest of width-cell, height-cell, and max cap
+            val target = minOf(cellW, cellH, MAX_CELL_DP)
+            if (target <= 0) return
+
+            val usedW = target * 2 + GRID_GAP_DP
+            val usedH = target * numRows + GRID_GAP_DP * (numRows - 1)
+
+            val extraH = ((gridW - usedW) / 2f).coerceAtLeast(0f)
+            val extraV = ((gridH - usedH) / 2f).coerceAtLeast(0f)
+
+            val padHPx = (extraH * density).toInt()
+            val padVPx = (extraV * density).toInt()
+
+            views.setViewPadding(R.id.shortcut_grid, padHPx, padVPx, padHPx, padVPx)
+        }
+
+        fun buildRemoteViews(
+            context: Context,
+            widgetData: android.content.SharedPreferences,
+            widthDp: Int = 0,
+            heightDp: Int = 0
+        ): RemoteViews {
             val styleName = widgetData.getString("widget_style", "frostedGlass") ?: "frostedGlass"
             val isBold = styleName == "boldColors"
 
@@ -66,6 +124,7 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
 
             val jsonString = widgetData.getString("shortcuts_json", "[]") ?: "[]"
             val shortcuts = JSONArray(jsonString)
+            val visibleCount = min(shortcuts.length(), slots.size)
 
             for (i in slots.indices) {
                 val slot = slots[i]
@@ -102,7 +161,18 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
                 }
             }
 
+            // Enforce square tiles with max size cap
+            applySquareTilePadding(context, views, widthDp, heightDp, visibleCount, isBold)
+
             return views
+        }
+
+        /** Extract widget dimensions (in dp) from the options bundle. */
+        private fun getWidgetSizeDp(options: Bundle): Pair<Int, Int> {
+            // In portrait the width is the min and height is the max
+            val w = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0)
+            val h = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0)
+            return Pair(w, h)
         }
     }
 
@@ -113,7 +183,9 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
         widgetData: android.content.SharedPreferences
     ) {
         for (appWidgetId in appWidgetIds) {
-            val views = buildRemoteViews(context, widgetData)
+            val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+            val (w, h) = getWidgetSizeDp(options)
+            val views = buildRemoteViews(context, widgetData, w, h)
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
     }
@@ -124,11 +196,9 @@ class ShortcutWidgetProvider : HomeWidgetProvider() {
         appWidgetId: Int,
         newOptions: Bundle
     ) {
-        // Re-render the widget when the user resizes it.
-        // The layout uses weight-based sizing so icons and cells
-        // automatically scale to fill the new boundaries.
+        val (w, h) = getWidgetSizeDp(newOptions)
         val prefs = context.getSharedPreferences("HomeWidgetPreferences", Context.MODE_PRIVATE)
-        val views = buildRemoteViews(context, prefs)
+        val views = buildRemoteViews(context, prefs, w, h)
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 }

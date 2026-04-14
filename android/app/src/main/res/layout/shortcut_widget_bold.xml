@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Bold color blocks widget layout -->
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/shortcut_grid"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:columnCount="2"
@@ -22,7 +23,7 @@
         android:visibility="gone">
         <ImageView
             android:id="@+id/icon_0"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:scaleType="fitCenter"
@@ -60,7 +61,7 @@
         android:visibility="gone">
         <ImageView
             android:id="@+id/icon_1"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:scaleType="fitCenter"
@@ -98,7 +99,7 @@
         android:visibility="gone">
         <ImageView
             android:id="@+id/icon_2"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:scaleType="fitCenter"
@@ -136,7 +137,7 @@
         android:visibility="gone">
         <ImageView
             android:id="@+id/icon_3"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:scaleType="fitCenter"
@@ -174,7 +175,7 @@
         android:visibility="gone">
         <ImageView
             android:id="@+id/icon_4"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:scaleType="fitCenter"
@@ -212,7 +213,7 @@
         android:visibility="gone">
         <ImageView
             android:id="@+id/icon_5"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:scaleType="fitCenter"

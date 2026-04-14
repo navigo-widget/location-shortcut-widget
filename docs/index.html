@@ -169,6 +169,10 @@
       return /android/i.test(navigator.userAgent);
     }
 
+    function isChrome() {
+      return /chrome/i.test(navigator.userAgent) && !/edg/i.test(navigator.userAgent);
+    }
+
     function init() {
       const params = new URLSearchParams(window.location.search);
       const label = params.get('label');
@@ -183,34 +187,44 @@
       }
 
       const queryParams = `label=${encodeURIComponent(label)}&lat=${lat}&lng=${lng}&icon=${icon}`;
-      const intentUrl = `intent://add?${queryParams}#Intent;scheme=navigo;package=com.navigo.app;end`;
       const deepLink = `navigo://add?${queryParams}`;
 
-      // Immediately try to open the app.
-      // On Android Chrome, use Intent URL which is handled natively.
-      // The browser will open the app if installed, or stay on this page if not.
-      if (isAndroid()) {
-        window.location.href = intentUrl;
-      } else {
-        window.location.href = deepLink;
+      // Build fallback URL: current page without the redirect attempt
+      var fallbackPage = window.location.href;
+      if (fallbackPage.indexOf('opened=') === -1) {
+        fallbackPage += (fallbackPage.indexOf('?') === -1 ? '?' : '&') + 'opened=1';
+      }
+      const intentUrl = `intent://add?${queryParams}#Intent;scheme=navigo;package=com.navigo.app;S.browser_fallback_url=${encodeURIComponent(fallbackPage)};end`;
+
+      // Show the fallback UI immediately so it's visible even if redirect fails.
+      // This prevents "resource not found" errors in in-app browsers and WebViews.
+      showFallback(label, icon, intentUrl, deepLink);
+
+      // If we already tried to redirect (came back via S.browser_fallback_url), don't retry.
+      if (params.get('opened')) {
+        return;
       }
 
-      // After a short delay, if we're still on this page, the app didn't open.
-      // Show the fallback UI with download button.
-      setTimeout(function() {
-        document.getElementById('loading').classList.add('hidden');
-        document.getElementById('fallback-content').classList.remove('hidden');
+      // Try to open the app. On Android Chrome, intent:// URLs are handled natively.
+      // On other browsers/WebViews, skip the redirect since they can't handle intent://.
+      if (isAndroid() && isChrome()) {
+        window.location.href = intentUrl;
+      }
+    }
 
-        document.getElementById('place-icon').textContent = iconMap[icon] || '\u{1F4CD}';
-        document.getElementById('place-label').textContent = decodeURIComponent(label);
+    function showFallback(label, icon, intentUrl, deepLink) {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('fallback-content').classList.remove('hidden');
 
-        var btn = document.getElementById('btn-open-app');
-        if (isAndroid()) {
-          btn.href = intentUrl;
-        } else {
-          btn.href = deepLink;
-        }
-      }, 1500);
+      document.getElementById('place-icon').textContent = iconMap[icon] || '\u{1F4CD}';
+      document.getElementById('place-label').textContent = decodeURIComponent(label);
+
+      var btn = document.getElementById('btn-open-app');
+      if (isAndroid()) {
+        btn.href = intentUrl;
+      } else {
+        btn.href = deepLink;
+      }
     }
 
     init();
