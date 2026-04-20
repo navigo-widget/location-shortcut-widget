@@ -415,7 +415,7 @@ class _WidgetStyleCard extends StatelessWidget {
             width: isSelected ? 2.5 : 1,
           ),
           color: isSelected
-              ? const Color(0xFFE3F2FD)
+              ? const Color(0xFFE8F5E9) // light green tint when selected
               : theme.cardTheme.color ?? theme.cardColor,
         ),
         padding: const EdgeInsets.all(12),
