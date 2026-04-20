@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
-  // Core brand color — metallic forest green, works on both light and dark
-  static const Color brandBlue = Color(0xFF2E7D32);       // forest green (primary)
-  static const Color brandBlueLight = Color(0xFF388E3C);  // lighter green
-  static const Color brandBlueSurface = Color(0xFF1B5E20); // deep green
-  static const Color accentOrange = Color(0xFFFF8F00);    // amber accent (unchanged)
+  // Core brand color — deep forest green, works on both light and dark
+  static const Color brandBlue = Color(0xFF1B5E20);        // deep forest green (primary)
+  static const Color brandBlueLight = Color(0xFF2E7D32);   // forest green
+  static const Color brandBlueSurface = Color(0xFF0d3b12); // very deep green
+  static const Color accentOrange = Color(0xFFFF8F00);     // amber accent (unchanged)
 
   // ─── Light Theme ───────────────────────────────────────────────
 
@@ -64,7 +64,7 @@ class AppTheme {
       colorScheme: const ColorScheme.dark(
         primary: Color(0xFF69F0AE),          // mint green
         onPrimary: Colors.black,
-        primaryContainer: brandBlueSurface,  // deep forest green
+        primaryContainer: Color(0xFF1B5E20),  // deep green — selected tile bg in dark mode
         secondary: accentOrange,
         onSecondary: Colors.black,
         error: Color(0xFFEF5350),
