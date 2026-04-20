@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 /// Senior-friendly theme: large fonts, high contrast, big touch targets.
-/// Supports both light and dark mode with a rich indigo-blue accent.
+/// Supports both light and dark mode with a metallic forest-green accent.
 class AppTheme {
   AppTheme._();
 
-  // Core brand color — deep indigo blue, works on both light and dark
-  static const Color brandBlue = Color(0xFF1A237E);
-  static const Color brandBlueLight = Color(0xFF3949AB);
-  static const Color brandBlueSurface = Color(0xFF283593);
-  static const Color accentOrange = Color(0xFFFF8F00);
+  // Core brand color — metallic forest green, works on both light and dark
+  static const Color brandBlue = Color(0xFF2E7D32);       // forest green (primary)
+  static const Color brandBlueLight = Color(0xFF388E3C);  // lighter green
+  static const Color brandBlueSurface = Color(0xFF1B5E20); // deep green
+  static const Color accentOrange = Color(0xFFFF8F00);    // amber accent (unchanged)
 
   // ─── Light Theme ───────────────────────────────────────────────
 
@@ -20,15 +20,15 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: brandBlue,
         onPrimary: Colors.white,
-        primaryContainer: Color(0xFFC5CAE9),
+        primaryContainer: Color(0xFFC8E6C9), // light green tint
         secondary: accentOrange,
         onSecondary: Colors.black,
         error: Color(0xFFC62828),
         surface: Colors.white,
         onSurface: Color(0xFF1A1A2E),
-        surfaceContainerHighest: Color(0xFFF0F0F5),
+        surfaceContainerHighest: Color(0xFFF0F5F0), // faint green tint
       ),
-      scaffoldBackgroundColor: const Color(0xFFF5F5FA),
+      scaffoldBackgroundColor: const Color(0xFFF5FAF5), // faint green tint
       textTheme: _textTheme(const Color(0xFF1A1A2E), const Color(0xFF4A4A6A)),
       appBarTheme: const AppBarTheme(
         backgroundColor: brandBlue,
@@ -62,20 +62,20 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: const ColorScheme.dark(
-        primary: Color(0xFF7986CB),
+        primary: Color(0xFF69F0AE),          // mint green
         onPrimary: Colors.black,
-        primaryContainer: brandBlue,
+        primaryContainer: brandBlueSurface,  // deep forest green
         secondary: accentOrange,
         onSecondary: Colors.black,
         error: Color(0xFFEF5350),
-        surface: Color(0xFF1E1E2E),
-        onSurface: Color(0xFFE8E8F0),
-        surfaceContainerHighest: Color(0xFF2A2A3E),
+        surface: Color(0xFF1A2318),          // very dark green-tinted surface
+        onSurface: Color(0xFFE8F5E9),        // soft green-white
+        surfaceContainerHighest: Color(0xFF243324), // dark green card
       ),
-      scaffoldBackgroundColor: const Color(0xFF121220),
-      textTheme: _textTheme(const Color(0xFFE8E8F0), const Color(0xFFB0B0CC)),
+      scaffoldBackgroundColor: const Color(0xFF101A10), // near-black green
+      textTheme: _textTheme(const Color(0xFFE8F5E9), const Color(0xFFA5D6A7)),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF1A1A2E),
+        backgroundColor: Color(0xFF1B5E20),  // deep forest green
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -85,9 +85,9 @@ class AppTheme {
           color: Colors.white,
         ),
       ),
-      elevatedButtonTheme: _elevatedButtonTheme(const Color(0xFF3949AB)),
-      outlinedButtonTheme: _outlinedButtonTheme(const Color(0xFF7986CB)),
-      textButtonTheme: _textButtonTheme(const Color(0xFF7986CB)),
+      elevatedButtonTheme: _elevatedButtonTheme(brandBlueLight),   // #388E3C
+      outlinedButtonTheme: _outlinedButtonTheme(const Color(0xFF69F0AE)),
+      textButtonTheme: _textButtonTheme(const Color(0xFF69F0AE)),
       inputDecorationTheme: _inputDecorationThemeDark(),
       cardTheme: _cardThemeDark(),
       dialogTheme: _dialogTheme(const Color(0xFFE8E8F0)),
@@ -172,22 +172,22 @@ class AppTheme {
   static InputDecorationTheme _inputDecorationThemeDark() {
     return InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFF2A2A3E),
+      fillColor: const Color(0xFF243324), // dark green card fill
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFF4A4A6A), width: 2),
+        borderSide: const BorderSide(color: Color(0xFF2E5E2E), width: 2),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFF4A4A6A), width: 2),
+        borderSide: const BorderSide(color: Color(0xFF2E5E2E), width: 2),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFF7986CB), width: 2),
+        borderSide: const BorderSide(color: Color(0xFF69F0AE), width: 2),
       ),
-      labelStyle: const TextStyle(fontSize: 18, color: Color(0xFFB0B0CC)),
-      hintStyle: const TextStyle(fontSize: 18, color: Color(0xFF6A6A8A)),
+      labelStyle: const TextStyle(fontSize: 18, color: Color(0xFFA5D6A7)),
+      hintStyle: const TextStyle(fontSize: 18, color: Color(0xFF4A7A4A)),
     );
   }
 
@@ -202,7 +202,7 @@ class AppTheme {
   static CardThemeData _cardThemeDark() {
     return CardThemeData(
       elevation: 3,
-      color: const Color(0xFF1E1E2E),
+      color: const Color(0xFF1A2318), // dark green-tinted card
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       margin: const EdgeInsets.all(8),
     );

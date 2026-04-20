@@ -52,7 +52,7 @@
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
-                android:tint="#FF1A237E"
+                android:tint="#FF1B5E20"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_0"
@@ -86,7 +86,7 @@
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
-                android:tint="#FF1A237E"
+                android:tint="#FF1B5E20"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_1"
@@ -120,7 +120,7 @@
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
-                android:tint="#FF1A237E"
+                android:tint="#FF1B5E20"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_2"
@@ -154,7 +154,7 @@
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
-                android:tint="#FF1A237E"
+                android:tint="#FF1B5E20"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_3"
@@ -188,7 +188,7 @@
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
-                android:tint="#FF1A237E"
+                android:tint="#FF1B5E20"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_4"
@@ -222,7 +222,7 @@
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
-                android:tint="#FF1A237E"
+                android:tint="#FF1B5E20"
                 android:src="@android:drawable/ic_menu_mylocation" />
             <TextView
                 android:id="@+id/label_5"
