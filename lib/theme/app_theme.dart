@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
-  // Core brand color — metallic forest green, works on both light and dark
-  static const Color brandBlue = Color(0xFF2E7D32);       // forest green (primary)
-  static const Color brandBlueLight = Color(0xFF388E3C);  // lighter green
-  static const Color brandBlueSurface = Color(0xFF1B5E20); // deep green
-  static const Color accentOrange = Color(0xFFFF8F00);    // amber accent (unchanged)
+  // Core brand color — very dark forest green, works on both light and dark
+  static const Color brandBlue = Color(0xFF0a3d0f);        // very dark forest green (primary)
+  static const Color brandBlueLight = Color(0xFF1B5E20);   // deep forest green
+  static const Color brandBlueSurface = Color(0xFF052008); // near-black green
+  static const Color accentOrange = Color(0xFFFF8F00);     // amber accent (unchanged)
 
   // ─── Light Theme ───────────────────────────────────────────────
 
@@ -64,18 +64,18 @@ class AppTheme {
       colorScheme: const ColorScheme.dark(
         primary: Color(0xFF69F0AE),          // mint green
         onPrimary: Colors.black,
-        primaryContainer: brandBlueSurface,  // deep forest green
+        primaryContainer: Color(0xFF0a3d0f),  // very dark green — selected tile bg in dark mode
         secondary: accentOrange,
         onSecondary: Colors.black,
         error: Color(0xFFEF5350),
-        surface: Color(0xFF1A2318),          // very dark green-tinted surface
+        surface: Color(0xFF0d1a0e),          // near-black green surface
         onSurface: Color(0xFFE8F5E9),        // soft green-white
-        surfaceContainerHighest: Color(0xFF243324), // dark green card
+        surfaceContainerHighest: Color(0xFF162918), // very dark green card
       ),
-      scaffoldBackgroundColor: const Color(0xFF101A10), // near-black green
+      scaffoldBackgroundColor: const Color(0xFF080f09), // deep black-green
       textTheme: _textTheme(const Color(0xFFE8F5E9), const Color(0xFFA5D6A7)),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF1B5E20),  // deep forest green
+        backgroundColor: Color(0xFF0a3d0f),  // very dark forest green
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -172,7 +172,7 @@ class AppTheme {
   static InputDecorationTheme _inputDecorationThemeDark() {
     return InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFF243324), // dark green card fill
+      fillColor: const Color(0xFF162918), // very dark green card fill
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -202,7 +202,7 @@ class AppTheme {
   static CardThemeData _cardThemeDark() {
     return CardThemeData(
       elevation: 3,
-      color: const Color(0xFF1A2318), // dark green-tinted card
+      color: const Color(0xFF0d1a0e), // near-black green card
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       margin: const EdgeInsets.all(8),
     );

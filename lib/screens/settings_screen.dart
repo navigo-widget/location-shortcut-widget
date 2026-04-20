@@ -292,7 +292,7 @@ class _ThemeOptionTile extends StatelessWidget {
     final primaryColor = theme.colorScheme.primary;
 
     return Card(
-      color: isSelected ? primaryColor.withAlpha(25) : theme.cardTheme.color,
+      color: isSelected ? theme.colorScheme.primaryContainer : theme.cardTheme.color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: isSelected
