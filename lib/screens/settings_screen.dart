@@ -302,6 +302,8 @@ class _ThemeOptionTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
+        splashColor: primaryColor.withAlpha(30),
+        highlightColor: primaryColor.withAlpha(20),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
