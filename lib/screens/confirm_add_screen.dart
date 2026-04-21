@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigo/models/shortcut.dart';
 import 'package:navigo/providers/shortcuts_provider.dart';
+import 'package:navigo/utils/expiry_utils.dart';
 import 'package:navigo/utils/shortcut_icons.dart';
 
 /// Shown when the app receives a deep link to add a shared shortcut.
@@ -260,6 +261,39 @@ class _ConfirmAddScreenState extends ConsumerState<ConfirmAddScreen> {
                       style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                       textAlign: TextAlign.center,
                     ),
+
+                    // Expiry notice — shown only when the sender set an expiry
+                    if (widget.shortcut.expiresAt != null) ...[
+                      const SizedBox(height: 14),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withAlpha(25),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                              color: Colors.orange.withAlpha(80)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.schedule_rounded,
+                                size: 15, color: Colors.orange),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Expires in '
+                              '${inferExpiryOption(widget.shortcut.expiresAt, widget.shortcut.createdAt).label.toLowerCase()} '
+                              'after you add it',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.orange,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

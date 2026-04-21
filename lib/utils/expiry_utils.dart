@@ -12,6 +12,26 @@ extension ExpiryOptionX on ExpiryOption {
         ExpiryOption.oneYear => '1 Year',
       };
 
+  /// URL-safe token used in deep-link share URLs (e.g. `expiry=3d`).
+  /// Returns null for [ExpiryOption.never] — the param is omitted entirely.
+  String? get toUrlParam => switch (this) {
+        ExpiryOption.never => null,
+        ExpiryOption.threeDays => '3d',
+        ExpiryOption.oneWeek => '7d',
+        ExpiryOption.oneMonth => '30d',
+        ExpiryOption.oneYear => '1y',
+      };
+
+  /// Parse a URL token back to an [ExpiryOption].
+  /// Returns null if the token is absent or unrecognised (treat as no expiry).
+  static ExpiryOption? fromUrlParam(String? param) => switch (param) {
+        '3d' => ExpiryOption.threeDays,
+        '7d' => ExpiryOption.oneWeek,
+        '30d' => ExpiryOption.oneMonth,
+        '1y' => ExpiryOption.oneYear,
+        _ => null,
+      };
+
   /// Compute the absolute expiry DateTime from now, or null for never.
   DateTime? get expiresAt => switch (this) {
         ExpiryOption.never => null,

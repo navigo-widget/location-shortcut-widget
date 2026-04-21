@@ -1,4 +1,5 @@
 import 'package:hive_ce/hive.dart';
+import 'package:navigo/utils/expiry_utils.dart';
 
 part 'shortcut.g.dart';
 
@@ -48,7 +49,14 @@ class LocationShortcut extends HiveObject {
   });
 
   /// Create a shortcut from an incoming deep link URI.
+  ///
+  /// If an `expiry` param is present (e.g. `expiry=3d`), [expiresAt] is set
+  /// to a *fresh* window starting from now — the recipient gets the full
+  /// duration, not a truncated slice of the sender's remaining time.
   factory LocationShortcut.fromDeepLink(Uri uri) {
+    final now = DateTime.now();
+    final expiryOption =
+        ExpiryOptionX.fromUrlParam(uri.queryParameters['expiry']);
     return LocationShortcut(
       id: '', // Will be assigned by the provider
       label: uri.queryParameters['label'] ?? 'Unknown Place',
@@ -58,12 +66,19 @@ class LocationShortcut extends HiveObject {
       placeId: uri.queryParameters['placeId'] ?? '',
       iconName: uri.queryParameters['icon'] ?? 'place',
       sortOrder: 0,
-      createdAt: DateTime.now(),
+      createdAt: now,
+      expiresAt: expiryOption?.expiresAt,
     );
   }
 
   /// Serialize this shortcut into a deep link URI for sharing.
+  ///
+  /// Expiry is encoded as a duration token (e.g. `expiry=3d`) so recipients
+  /// get a fresh window rather than the sender's remaining time.
   Uri toDeepLinkUri() {
+    final expiryToken = expiresAt != null
+        ? inferExpiryOption(expiresAt, createdAt).toUrlParam
+        : null;
     return Uri(
       scheme: 'navigo',
       host: 'add',
@@ -74,6 +89,7 @@ class LocationShortcut extends HiveObject {
         'placeId': placeId,
         'address': address.length > 200 ? address.substring(0, 200) : address,
         'icon': iconName,
+        if (expiryToken != null) 'expiry': expiryToken,
       },
     );
   }
