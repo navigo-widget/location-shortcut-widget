@@ -17,9 +17,11 @@ class PlaceResult {
   });
 }
 
-/// A search field that uses the Google Places API for autocomplete.
+/// A search field that uses the OpenStreetMap Nominatim API for autocomplete.
 ///
-/// The API key should be passed via --dart-define=PLACES_API_KEY=xxx at build time.
+/// Nominatim is completely free — no API key required.
+/// Usage policy: max 1 request/second; must show OSM attribution in the app.
+/// See: https://nominatim.org/release-docs/latest/api/Search/
 class PlaceSearchField extends StatefulWidget {
   final void Function(PlaceResult result) onPlaceSelected;
 
@@ -31,10 +33,11 @@ class PlaceSearchField extends StatefulWidget {
 
 class _PlaceSearchFieldState extends State<PlaceSearchField> {
   final _controller = TextEditingController();
-  List<_Prediction> _predictions = [];
+  List<_NominatimResult> _results = [];
   bool _isLoading = false;
 
-  static const _apiKey = String.fromEnvironment('PLACES_API_KEY');
+  // Debounce: only fire a request after the user pauses typing
+  DateTime _lastQuery = DateTime.fromMillisecondsSinceEpoch(0);
 
   @override
   void dispose() {
@@ -44,62 +47,59 @@ class _PlaceSearchFieldState extends State<PlaceSearchField> {
 
   Future<void> _onSearchChanged(String query) async {
     if (query.length < 3) {
-      setState(() => _predictions = []);
+      setState(() => _results = []);
       return;
     }
+
+    // Debounce to ~400 ms so we don't exceed the 1 req/sec Nominatim limit
+    final queryTime = DateTime.now();
+    _lastQuery = queryTime;
+    await Future.delayed(const Duration(milliseconds: 400));
+    if (_lastQuery != queryTime) return; // a newer query superseded this one
 
     setState(() => _isLoading = true);
 
     try {
       final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/autocomplete/json'
-        '?input=${Uri.encodeComponent(query)}'
-        '&key=$_apiKey',
+        'https://nominatim.openstreetmap.org/search'
+        '?q=${Uri.encodeComponent(query)}'
+        '&format=json'
+        '&limit=5'
+        '&addressdetails=0',
       );
-      final response = await http.get(url);
+      final response = await http.get(url, headers: {
+        // Nominatim requires a descriptive User-Agent
+        'User-Agent': 'NaviGo/1.0 (flutter; contact@navigo.app)',
+      });
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final predictions = (data['predictions'] as List)
-            .map((p) => _Prediction(
-                  placeId: p['place_id'] as String,
-                  description: p['description'] as String,
+        final List<dynamic> data = jsonDecode(response.body);
+        final results = data
+            .map((item) => _NominatimResult(
+                  osmId: item['osm_id']?.toString() ?? item['place_id']?.toString() ?? '',
+                  displayName: item['display_name'] as String,
+                  latitude: double.parse(item['lat'] as String),
+                  longitude: double.parse(item['lon'] as String),
                 ))
             .toList();
-        setState(() => _predictions = predictions);
+        if (mounted) setState(() => _results = results);
       }
     } catch (_) {
       // Silently handle network errors — the user can retry
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  Future<void> _onPredictionSelected(_Prediction prediction) async {
-    _controller.text = prediction.description;
-    setState(() => _predictions = []);
+  void _onResultSelected(_NominatimResult result) {
+    _controller.text = result.displayName;
+    setState(() => _results = []);
 
-    // Fetch place details to get lat/lng
-    try {
-      final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/details/json'
-        '?place_id=${prediction.placeId}'
-        '&fields=geometry'
-        '&key=$_apiKey',
-      );
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final location = data['result']['geometry']['location'];
-        widget.onPlaceSelected(PlaceResult(
-          placeId: prediction.placeId,
-          description: prediction.description,
-          latitude: (location['lat'] as num).toDouble(),
-          longitude: (location['lng'] as num).toDouble(),
-        ));
-      }
-    } catch (_) {
-      // Handle error — user can retry
-    }
+    widget.onPlaceSelected(PlaceResult(
+      placeId: result.osmId,
+      description: result.displayName,
+      latitude: result.latitude,
+      longitude: result.longitude,
+    ));
   }
 
   @override
@@ -128,13 +128,13 @@ class _PlaceSearchFieldState extends State<PlaceSearchField> {
                         icon: const Icon(Icons.clear, size: 24),
                         onPressed: () {
                           _controller.clear();
-                          setState(() => _predictions = []);
+                          setState(() => _results = []);
                         },
                       )
                     : null,
           ),
         ),
-        if (_predictions.isNotEmpty)
+        if (_results.isNotEmpty)
           Container(
             margin: const EdgeInsets.only(top: 4),
             decoration: BoxDecoration(
@@ -152,33 +152,53 @@ class _PlaceSearchFieldState extends State<PlaceSearchField> {
             child: ListView.separated(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
-              itemCount: _predictions.length,
+              itemCount: _results.length,
               separatorBuilder: (_, __) => const Divider(height: 1),
               itemBuilder: (context, index) {
-                final prediction = _predictions[index];
+                final result = _results[index];
                 return ListTile(
                   leading: const Icon(Icons.place, size: 28),
                   title: Text(
-                    prediction.description,
+                    result.displayName,
                     style: const TextStyle(fontSize: 16),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 8,
                   ),
-                  onTap: () => _onPredictionSelected(prediction),
+                  onTap: () => _onResultSelected(result),
                 );
               },
             ),
           ),
+        // OSM attribution — required by Nominatim usage policy
+        Padding(
+          padding: const EdgeInsets.only(top: 4, right: 4),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              '© OpenStreetMap contributors',
+              style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+            ),
+          ),
+        ),
       ],
     );
   }
 }
 
-class _Prediction {
-  final String placeId;
-  final String description;
+class _NominatimResult {
+  final String osmId;
+  final String displayName;
+  final double latitude;
+  final double longitude;
 
-  const _Prediction({required this.placeId, required this.description});
+  const _NominatimResult({
+    required this.osmId,
+    required this.displayName,
+    required this.latitude,
+    required this.longitude,
+  });
 }
