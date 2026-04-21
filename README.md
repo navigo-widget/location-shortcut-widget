@@ -22,15 +22,15 @@ NaviGo lets users (or their family and friends) pre-configure a set of named sho
 
 - **One-Tap Navigation** — Each shortcut opens Google Maps directions directly, skipping search and confirmation entirely.
 - **Simple, Senior-Friendly UI** — Large buttons, high-contrast text, and a minimal interface designed for readability and ease of use.
-- **Family & Friend Sharing** — Shortcuts can be shared via WhatsApp, iMessage, or any messaging app as a simple link. When the recipient taps the link, the location is automatically added to their home screen widget — no manual setup required.
+- **Family & Friend Sharing** — Shortcuts can be shared via WhatsApp or any messaging app as a simple link. When the recipient taps the link, NaviGo opens with a one-tap confirmation to add the shortcut to their home screen.
 - **Easy Setup** — Adding a new shortcut is as simple as searching for a place once and giving it a name. Family members can set up shortcuts remotely by sharing them.
 - **Customizable Labels & Icons** — Each shortcut can have a friendly name and icon (e.g., a house for Home, a red cross for Hospital) so users recognize destinations at a glance.
 
 ### How Sharing Works
 
 1. A family member creates a shortcut (e.g., "City Hospital") in their own app.
-2. They tap **Share** and send it via WhatsApp or Messages.
-3. The elderly user receives a link, taps it, and the shortcut is automatically added to their home screen.
+2. They tap **Share** and send it via WhatsApp or any messaging app.
+3. The elderly user receives a link, taps it, and confirms with a single tap to add the shortcut to their home screen.
 4. From that point on, one tap is all it takes to navigate there.
 
 This means a son or daughter in another city can set up their parent's entire shortcut collection without being physically present.
@@ -43,7 +43,13 @@ This means a son or daughter in another city can set up their parent's entire sh
 
 ## Tech Stack
 
-*To be decided — details will be added as development begins.*
+- **Flutter** (Dart) — currently Android-only
+- **Riverpod** for state management
+- **Hive** for local storage
+- **go_router** for routing and deep links
+- **OpenStreetMap Nominatim** for place search
+- **home_widget** for Android home screen widgets
+- **share_plus** + a GitHub Pages redirect page for shareable links
 
 ## License
 
