@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:navigo/models/shortcut.dart';
 import 'package:navigo/utils/expiry_utils.dart';
 import 'package:navigo/utils/shortcut_icons.dart';
@@ -120,7 +121,10 @@ class ShortcutButton extends StatelessWidget {
           Expanded(
             flex: 25,
             child: InkWell(
-              onTap: onNavigate,
+              onTap: () {
+                HapticFeedback.mediumImpact();
+                onNavigate();
+              },
               child: Container(
                 color: iconData.color.withAlpha(isDark ? 40 : 20),
                 child: Center(

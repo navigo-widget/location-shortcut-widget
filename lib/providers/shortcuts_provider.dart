@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import 'package:navigo/models/shortcut.dart';
 import 'package:navigo/providers/widget_style_provider.dart';
+import 'package:navigo/services/notification_service.dart';
 import 'package:navigo/services/storage_service.dart';
 import 'package:navigo/services/widget_service.dart';
 
@@ -32,9 +33,10 @@ class ShortcutsNotifier extends StateNotifier<List<LocationShortcut>> {
     // Auto-delete any shortcuts that have passed their expiry date
     final expired = all.where(
       (s) => s.expiresAt != null && s.expiresAt!.isBefore(now),
-    );
+    ).toList();
     for (final s in expired) {
       _storage.delete(s.id);
+      NotificationService.cancel(s.id);
     }
     state = _storage.getAll();
     if (expired.isNotEmpty) {
@@ -49,16 +51,20 @@ class ShortcutsNotifier extends StateNotifier<List<LocationShortcut>> {
     );
     await _storage.add(newShortcut);
     state = _storage.getAll();
+    await NotificationService.scheduleExpiryWarning(newShortcut);
     await WidgetService.syncToWidget(state, style: _widgetStyle);
   }
 
   Future<void> updateShortcut(LocationShortcut shortcut) async {
     await _storage.update(shortcut);
     state = _storage.getAll();
+    await NotificationService.cancel(shortcut.id);
+    await NotificationService.scheduleExpiryWarning(shortcut);
     await WidgetService.syncToWidget(state, style: _widgetStyle);
   }
 
   Future<void> deleteShortcut(String id) async {
+    await NotificationService.cancel(id);
     await _storage.delete(id);
     state = _storage.getAll();
     await WidgetService.syncToWidget(state, style: _widgetStyle);

@@ -23,6 +23,11 @@ dependencies:
 
   # Maps & location
   url_launcher: ^6.3.1
+  geolocator: ^13.0.2
+
+  # Notifications
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.9.4
 
   # Sharing
   share_plus: ^10.1.4
