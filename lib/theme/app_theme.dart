@@ -92,8 +92,8 @@ class AppTheme {
       cardTheme: _cardThemeDark(),
       dialogTheme: _dialogTheme(const Color(0xFFE8E8F0)),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: Color(0xFF3949AB),
-        foregroundColor: Colors.white,
+        backgroundColor: Color(0xFF69F0AE), // mint green — matches dark theme primary
+        foregroundColor: Colors.black,
         extendedTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
       ),
     );
