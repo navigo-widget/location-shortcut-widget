@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigo/models/shortcut.dart';
 import 'package:navigo/providers/shortcuts_provider.dart';
+import 'package:navigo/utils/expiry_utils.dart';
 import 'package:navigo/utils/shortcut_icons.dart';
+import 'package:navigo/widgets/expiry_picker.dart';
 import 'package:navigo/widgets/icon_picker.dart' show IconPickerCompact;
 import 'package:navigo/widgets/place_search_field.dart';
 
@@ -18,6 +20,7 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
   final _labelController = TextEditingController();
   PlaceResult? _selectedPlace;
   String _selectedIcon = 'place';
+  ExpiryOption _selectedExpiry = ExpiryOption.never;
   bool _iconManuallyChanged = false;
   bool _isSaving = false;
 
@@ -43,6 +46,7 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
       iconName: _selectedIcon,
       sortOrder: 0,
       createdAt: DateTime.now(),
+      expiresAt: _selectedExpiry.expiresAt,
     );
 
     await ref.read(shortcutsProvider.notifier).addShortcut(shortcut);
@@ -158,6 +162,19 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
                     _iconManuallyChanged = true;
                   });
                 },
+              ),
+
+              const SizedBox(height: 28),
+
+              // Step 4: Expiry
+              Text(
+                'Step 4: Expiry',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              ExpiryPicker(
+                selected: _selectedExpiry,
+                onChanged: (option) => setState(() => _selectedExpiry = option),
               ),
             ],
 

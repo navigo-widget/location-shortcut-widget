@@ -14,13 +14,11 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool? _isWidgetPinned;
-  bool? _isAppLinkVerified;
 
   @override
   void initState() {
     super.initState();
     _checkWidgetStatus();
-    _checkAppLinkStatus();
   }
 
   Future<void> _checkWidgetStatus() async {
@@ -30,11 +28,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
-  Future<void> _checkAppLinkStatus() async {
-    final verified = await WidgetService.isAppLinkVerified();
-    if (mounted) {
-      setState(() => _isAppLinkVerified = verified);
-    }
+  void _showRemoveWidgetHelp() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('How to remove the widget'),
+        content: const Text(
+          'Android doesn\'t let apps remove widgets automatically.\n\n'
+          'To remove the NaviGo widget:\n\n'
+          '1. Go to your home screen\n'
+          '2. Long-press the NaviGo widget\n'
+          '3. Drag it to "Remove" at the top of the screen',
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Got it'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -47,15 +60,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         title: const Text('Settings'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         children: [
-          // Widget section
-          Text(
-            'Home Screen Widget',
-            style: theme.textTheme.titleLarge,
-          ),
-          const SizedBox(height: 12),
+          // ── Widget ─────────────────────────────────────────────
+          const _SectionHeader('Widget'),
+          const SizedBox(height: 8),
 
+          // Widget status row
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -97,7 +108,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     FilledButton.tonalIcon(
                       onPressed: () async {
                         await WidgetService.requestPinWidget();
-                        // Re-check after a short delay to allow the system to process
                         Future.delayed(const Duration(seconds: 2), () {
                           _checkWidgetStatus();
                         });
@@ -111,97 +121,52 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ),
                   if (_isWidgetPinned == true)
-                    const Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 28,
+                    FilledButton.tonalIcon(
+                      onPressed: _showRemoveWidgetHelp,
+                      icon: const Icon(Icons.remove_circle_outline, size: 20),
+                      label: const Text('Remove'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.red.shade50,
+                        foregroundColor: Colors.red.shade700,
+                        minimumSize: Size.zero,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                      ),
                     ),
                 ],
               ),
             ),
           ),
 
-          if (_isAppLinkVerified == false) ...[
-            const SizedBox(height: 16),
-            Card(
-              color: Colors.orange.shade50,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.link_off_rounded,
-                      size: 32,
-                      color: Colors.orange.shade700,
+          const SizedBox(height: 8),
+
+          // Widget style picker (inside same section)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Style',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: theme.textTheme.bodyLarge?.color,
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Shared links open in browser',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.orange.shade900,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Enable "Open supported links" so shared locations open directly in NaviGo',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.orange.shade800,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    FilledButton.tonalIcon(
-                      onPressed: () async {
-                        await WidgetService.openAppLinkSettings();
-                        // Re-check after user returns
-                        Future.delayed(const Duration(seconds: 1), () {
-                          _checkAppLinkStatus();
-                        });
-                      },
-                      icon: const Icon(Icons.settings, size: 18),
-                      label: const Text('Fix'),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.orange.shade100,
-                        foregroundColor: Colors.orange.shade900,
-                        minimumSize: Size.zero,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 10),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 12),
+                  _WidgetStylePicker(),
+                ],
               ),
             ),
-          ],
-
-          const SizedBox(height: 20),
-
-          // Widget Style section
-          Text(
-            'Widget Style',
-            style: theme.textTheme.titleLarge,
           ),
-          const SizedBox(height: 12),
 
-          _WidgetStylePicker(),
+          const SizedBox(height: 24),
 
-          const SizedBox(height: 28),
-
-          // Appearance section
-          Text(
-            'Appearance',
-            style: theme.textTheme.titleLarge,
-          ),
-          const SizedBox(height: 12),
+          // ── Appearance ─────────────────────────────────────────
+          const _SectionHeader('Appearance'),
+          const SizedBox(height: 8),
 
           _ThemeOptionTile(
             title: 'System Default',
@@ -233,29 +198,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 .setThemeMode(ThemeMode.dark),
           ),
 
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
 
-          // About section
-          Text(
-            'About',
-            style: theme.textTheme.titleLarge,
-          ),
-          const SizedBox(height: 12),
+          // ── About ──────────────────────────────────────────────
+          const _SectionHeader('About'),
+          const SizedBox(height: 8),
+
           Card(
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'NaviGo',
-                    style: theme.textTheme.titleMedium,
-                  ),
+                  Text('NaviGo', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 4),
-                  Text(
-                    'Version 1.0.0',
-                    style: theme.textTheme.bodyMedium,
-                  ),
+                  Text('Version 1.0.0', style: theme.textTheme.bodyMedium),
                   const SizedBox(height: 12),
                   Text(
                     'One-tap navigation for the people who need it most.\nNaviGo makes getting around simple.',
@@ -265,7 +222,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
           ),
+
+          const SizedBox(height: 24),
         ],
+      ),
+    );
+  }
+}
+
+/// Uniform section header used throughout the settings page.
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  const _SectionHeader(this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Text(
+      title.toUpperCase(),
+      style: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 1.2,
+        color: theme.colorScheme.primary,
       ),
     );
   }
@@ -327,10 +306,7 @@ class _ThemeOptionTile extends StatelessWidget {
                             : theme.textTheme.bodyLarge?.color,
                       ),
                     ),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodyMedium,
-                    ),
+                    Text(subtitle, style: theme.textTheme.bodyMedium),
                   ],
                 ),
               ),
@@ -359,7 +335,6 @@ class _WidgetStylePicker extends ConsumerWidget {
               await ref
                   .read(widgetStyleProvider.notifier)
                   .setStyle(WidgetStyle.frostedGlass);
-              // Re-sync widget with new style
               final shortcuts = ref.read(shortcutsProvider);
               await WidgetService.syncToWidget(shortcuts,
                   style: WidgetStyle.frostedGlass);
@@ -417,7 +392,7 @@ class _WidgetStyleCard extends StatelessWidget {
             width: isSelected ? 2.5 : 1,
           ),
           color: isSelected
-              ? const Color(0xFFE8F5E9) // light green tint when selected
+              ? const Color(0xFFE8F5E9)
               : theme.cardTheme.color ?? theme.cardColor,
         ),
         padding: const EdgeInsets.all(12),
@@ -425,10 +400,7 @@ class _WidgetStyleCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                height: 90,
-                child: child,
-              ),
+              child: SizedBox(height: 90, child: child),
             ),
             const SizedBox(height: 10),
             Row(
@@ -476,7 +448,6 @@ class _FrostedGlassPreview extends StatelessWidget {
       padding: const EdgeInsets.all(6),
       child: Column(
         children: [
-          // Title bar
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
@@ -489,7 +460,6 @@ class _FrostedGlassPreview extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          // 2x2 grid of glass tiles
           Expanded(
             child: Row(
               children: [
