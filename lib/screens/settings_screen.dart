@@ -28,6 +28,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
+  void _showRemoveWidgetHelp() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('How to remove the widget'),
+        content: const Text(
+          'Android doesn\'t let apps remove widgets automatically.\n\n'
+          'To remove the NaviGo widget:\n\n'
+          '1. Go to your home screen\n'
+          '2. Long-press the NaviGo widget\n'
+          '3. Drag it to "Remove" at the top of the screen',
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Got it'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentMode = ref.watch(themeModeProvider);
@@ -99,10 +121,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ),
                   if (_isWidgetPinned == true)
-                    const Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 28,
+                    FilledButton.tonalIcon(
+                      onPressed: _showRemoveWidgetHelp,
+                      icon: const Icon(Icons.remove_circle_outline, size: 20),
+                      label: const Text('Remove'),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Colors.red.shade50,
+                        foregroundColor: Colors.red.shade700,
+                        minimumSize: Size.zero,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                      ),
                     ),
                 ],
               ),
