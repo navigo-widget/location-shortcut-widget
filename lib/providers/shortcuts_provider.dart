@@ -27,7 +27,19 @@ class ShortcutsNotifier extends StateNotifier<List<LocationShortcut>> {
   }
 
   void loadAll() {
+    final all = _storage.getAll();
+    final now = DateTime.now();
+    // Auto-delete any shortcuts that have passed their expiry date
+    final expired = all.where(
+      (s) => s.expiresAt != null && s.expiresAt!.isBefore(now),
+    );
+    for (final s in expired) {
+      _storage.delete(s.id);
+    }
     state = _storage.getAll();
+    if (expired.isNotEmpty) {
+      WidgetService.syncToWidget(state, style: _widgetStyle);
+    }
   }
 
   Future<void> addShortcut(LocationShortcut shortcut) async {

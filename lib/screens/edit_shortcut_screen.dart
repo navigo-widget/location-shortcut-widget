@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigo/providers/shortcuts_provider.dart';
 import 'package:navigo/services/sharing_service.dart';
+import 'package:navigo/utils/expiry_utils.dart';
+import 'package:navigo/widgets/expiry_picker.dart';
 import 'package:navigo/widgets/icon_picker.dart' show IconPickerCompact;
 
 class EditShortcutScreen extends ConsumerStatefulWidget {
@@ -17,6 +19,7 @@ class EditShortcutScreen extends ConsumerStatefulWidget {
 class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
   late TextEditingController _labelController;
   late String _selectedIcon;
+  late ExpiryOption _selectedExpiry;
   bool _initialized = false;
 
   @override
@@ -42,6 +45,7 @@ class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
     if (!_initialized) {
       _labelController = TextEditingController(text: shortcut.label);
       _selectedIcon = shortcut.iconName;
+      _selectedExpiry = inferExpiryOption(shortcut.expiresAt, shortcut.createdAt);
       _initialized = true;
     }
 
@@ -119,6 +123,16 @@ class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
               },
             ),
 
+            const SizedBox(height: 28),
+
+            // Expiry
+            Text('Expiry', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 12),
+            ExpiryPicker(
+              selected: _selectedExpiry,
+              onChanged: (option) => setState(() => _selectedExpiry = option),
+            ),
+
             const SizedBox(height: 40),
 
             // Save button
@@ -127,6 +141,7 @@ class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
                 final updatedShortcut = shortcut.copyWith(
                   label: _labelController.text.trim(),
                   iconName: _selectedIcon,
+                  expiresAt: _selectedExpiry.expiresAt,
                 );
                 await ref
                     .read(shortcutsProvider.notifier)

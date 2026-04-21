@@ -31,6 +31,9 @@ class LocationShortcut extends HiveObject {
   @HiveField(8)
   final DateTime createdAt;
 
+  @HiveField(9)
+  final DateTime? expiresAt;
+
   LocationShortcut({
     required this.id,
     required this.label,
@@ -41,6 +44,7 @@ class LocationShortcut extends HiveObject {
     required this.iconName,
     required this.sortOrder,
     required this.createdAt,
+    this.expiresAt,
   });
 
   /// Create a shortcut from an incoming deep link URI.
@@ -108,6 +112,8 @@ class LocationShortcut extends HiveObject {
     String? iconName,
     int? sortOrder,
     DateTime? createdAt,
+    // Use a sentinel so callers can explicitly clear expiresAt to null
+    Object? expiresAt = _sentinel,
   }) {
     return LocationShortcut(
       id: id ?? this.id,
@@ -119,6 +125,9 @@ class LocationShortcut extends HiveObject {
       iconName: iconName ?? this.iconName,
       sortOrder: sortOrder ?? this.sortOrder,
       createdAt: createdAt ?? this.createdAt,
+      expiresAt: expiresAt == _sentinel ? this.expiresAt : expiresAt as DateTime?,
     );
   }
 }
+
+const Object _sentinel = Object();
