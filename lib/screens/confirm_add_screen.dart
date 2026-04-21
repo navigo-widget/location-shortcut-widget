@@ -101,10 +101,13 @@ class _ConfirmAddScreenState extends ConsumerState<ConfirmAddScreen> {
   }
 
   void _showReplaceDialog(LocationShortcut existing) {
+    // Capture screen context before entering the dialog builder,
+    // so we don't accidentally use the dialog's local context after awaits.
+    final screenContext = context;
     showDialog(
-      context: context,
+      context: screenContext,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Location already saved'),
         content: Text(
           'You already have "${existing.label}" saved at this location.\n\n'
@@ -113,14 +116,14 @@ class _ConfirmAddScreenState extends ConsumerState<ConfirmAddScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              context.go('/');
+              Navigator.pop(dialogContext);
+              screenContext.go('/');
             },
             child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               final updated = widget.shortcut.copyWith(
                 id: existing.id,
                 sortOrder: existing.sortOrder,
@@ -128,17 +131,16 @@ class _ConfirmAddScreenState extends ConsumerState<ConfirmAddScreen> {
               await ref
                   .read(shortcutsProvider.notifier)
                   .updateShortcut(updated);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '"${existing.label}" replaced with "${widget.shortcut.label}".',
-                      style: const TextStyle(fontSize: 16),
-                    ),
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '"${existing.label}" replaced with "${widget.shortcut.label}".',
+                    style: const TextStyle(fontSize: 16),
                   ),
-                );
-                context.go('/');
-              }
+                ),
+              );
+              context.go('/');
             },
             child: const Text('Replace'),
           ),
@@ -157,17 +159,16 @@ class _ConfirmAddScreenState extends ConsumerState<ConfirmAddScreen> {
         .read(shortcutsProvider.notifier)
         .addShortcut(widget.shortcut.copyWith(label: label));
 
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '"$label" added to your shortcuts!',
-            style: const TextStyle(fontSize: 16),
-          ),
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '"$label" added to your shortcuts!',
+          style: const TextStyle(fontSize: 16),
         ),
-      );
-      context.go('/');
-    }
+      ),
+    );
+    context.go('/');
   }
 
   // ── UI ───────────────────────────────────────────────────────────────
