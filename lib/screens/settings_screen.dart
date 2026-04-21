@@ -14,26 +14,17 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool? _isWidgetPinned;
-  bool? _isAppLinkVerified;
 
   @override
   void initState() {
     super.initState();
     _checkWidgetStatus();
-    _checkAppLinkStatus();
   }
 
   Future<void> _checkWidgetStatus() async {
     final pinned = await WidgetService.isWidgetPinned();
     if (mounted) {
       setState(() => _isWidgetPinned = pinned);
-    }
-  }
-
-  Future<void> _checkAppLinkStatus() async {
-    final verified = await WidgetService.isAppLinkVerified();
-    if (mounted) {
-      setState(() => _isAppLinkVerified = verified);
     }
   }
 
@@ -121,67 +112,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
           ),
 
-          if (_isAppLinkVerified == false) ...[
-            const SizedBox(height: 16),
-            Card(
-              color: Colors.orange.shade50,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.link_off_rounded,
-                      size: 32,
-                      color: Colors.orange.shade700,
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Shared links open in browser',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.orange.shade900,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Enable "Open supported links" so shared locations open directly in NaviGo',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.orange.shade800,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    FilledButton.tonalIcon(
-                      onPressed: () async {
-                        await WidgetService.openAppLinkSettings();
-                        // Re-check after user returns
-                        Future.delayed(const Duration(seconds: 1), () {
-                          _checkAppLinkStatus();
-                        });
-                      },
-                      icon: const Icon(Icons.settings, size: 18),
-                      label: const Text('Fix'),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.orange.shade100,
-                        foregroundColor: Colors.orange.shade900,
-                        minimumSize: Size.zero,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 10),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
 
           const SizedBox(height: 20),
 
