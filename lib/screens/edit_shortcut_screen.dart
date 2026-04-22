@@ -6,6 +6,7 @@ import 'package:navigo/services/sharing_service.dart';
 import 'package:navigo/utils/expiry_utils.dart';
 import 'package:navigo/widgets/expiry_picker.dart';
 import 'package:navigo/widgets/icon_picker.dart' show IconPickerCompact;
+import 'package:navigo/widgets/place_search_field.dart';
 
 class EditShortcutScreen extends ConsumerStatefulWidget {
   final String shortcutId;
@@ -21,6 +22,9 @@ class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
   late String _selectedIcon;
   late ExpiryOption _selectedExpiry;
   bool _initialized = false;
+  // Non-null when the user has picked a new address; null = keep original
+  PlaceResult? _newPlace;
+  bool _showAddressSearch = false;
 
   @override
   void dispose() {
@@ -65,31 +69,69 @@ class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Address (read-only)
-            Text(
-              'Address',
-              style: Theme.of(context).textTheme.titleLarge,
+            // Address — shows current, with option to change
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Address',
+                    style: Theme.of(context).textTheme.titleLarge),
+                TextButton.icon(
+                  onPressed: () =>
+                      setState(() => _showAddressSearch = !_showAddressSearch),
+                  icon: Icon(
+                    _showAddressSearch ? Icons.close : Icons.edit_rounded,
+                    size: 18,
+                  ),
+                  label: Text(_showAddressSearch ? 'Cancel' : 'Change'),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
+
+            // Current / newly selected address chip
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey.withAlpha(25),
+                color: _newPlace != null
+                    ? Colors.green.withAlpha(20)
+                    : Colors.grey.withAlpha(25),
                 borderRadius: BorderRadius.circular(12),
+                border: _newPlace != null
+                    ? Border.all(color: Colors.green.withAlpha(80))
+                    : null,
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.place, size: 28, color: Colors.grey),
+                  Icon(
+                    _newPlace != null
+                        ? Icons.check_circle_rounded
+                        : Icons.place,
+                    size: 28,
+                    color: _newPlace != null ? Colors.green : Colors.grey,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      shortcut.address,
+                      _newPlace?.description ?? shortcut.address,
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ],
               ),
             ),
+
+            // Inline search field — shown only when user taps "Change"
+            if (_showAddressSearch) ...[
+              const SizedBox(height: 12),
+              PlaceSearchField(
+                onPlaceSelected: (result) {
+                  setState(() {
+                    _newPlace = result;
+                    _showAddressSearch = false;
+                  });
+                },
+              ),
+            ],
 
             const SizedBox(height: 28),
 
@@ -142,6 +184,11 @@ class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
                   label: _labelController.text.trim(),
                   iconName: _selectedIcon,
                   expiresAt: _selectedExpiry.expiresAt,
+                  // Apply new address/coords only if user picked one
+                  address: _newPlace?.description,
+                  latitude: _newPlace?.latitude,
+                  longitude: _newPlace?.longitude,
+                  placeId: _newPlace?.placeId,
                 );
                 await ref
                     .read(shortcutsProvider.notifier)

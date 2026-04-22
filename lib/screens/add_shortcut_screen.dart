@@ -81,6 +81,16 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
   Future<void> _save() async {
     if (_selectedPlace == null) return;
     if (_labelController.text.trim().isEmpty) return;
+    if (_selectedPlace!.latitude == 0 && _selectedPlace!.longitude == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Invalid location coordinates. Please search and select a place again.',
+          ),
+        ),
+      );
+      return;
+    }
 
     setState(() => _isSaving = true);
 
