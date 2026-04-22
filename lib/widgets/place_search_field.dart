@@ -35,6 +35,7 @@ class _PlaceSearchFieldState extends State<PlaceSearchField> {
   final _controller = TextEditingController();
   List<_NominatimResult> _results = [];
   bool _isLoading = false;
+  String? _errorMessage;
 
   // Debounce: only fire a request after the user pauses typing
   DateTime _lastQuery = DateTime.fromMillisecondsSinceEpoch(0);
@@ -47,7 +48,10 @@ class _PlaceSearchFieldState extends State<PlaceSearchField> {
 
   Future<void> _onSearchChanged(String query) async {
     if (query.length < 3) {
-      setState(() => _results = []);
+      setState(() {
+        _results = [];
+        _errorMessage = null;
+      });
       return;
     }
 
@@ -57,7 +61,10 @@ class _PlaceSearchFieldState extends State<PlaceSearchField> {
     await Future.delayed(const Duration(milliseconds: 400));
     if (_lastQuery != queryTime) return; // a newer query superseded this one
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
       final url = Uri.parse(
@@ -84,15 +91,31 @@ class _PlaceSearchFieldState extends State<PlaceSearchField> {
         if (mounted) setState(() => _results = results);
       }
     } catch (_) {
-      // Silently handle network errors — the user can retry
+      if (mounted) {
+        setState(() => _errorMessage =
+            'Could not search. Check your internet connection and try again.');
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
   void _onResultSelected(_NominatimResult result) {
+    // Guard against bad Nominatim results with no real coordinates
+    if (result.latitude == 0 && result.longitude == 0) {
+      setState(() {
+        _results = [];
+        _errorMessage =
+            'Could not get coordinates for this place. Try a different result.';
+      });
+      return;
+    }
+
     _controller.text = result.displayName;
-    setState(() => _results = []);
+    setState(() {
+      _results = [];
+      _errorMessage = null;
+    });
 
     widget.onPlaceSelected(PlaceResult(
       placeId: result.osmId,
@@ -128,12 +151,33 @@ class _PlaceSearchFieldState extends State<PlaceSearchField> {
                         icon: const Icon(Icons.clear, size: 24),
                         onPressed: () {
                           _controller.clear();
-                          setState(() => _results = []);
+                          setState(() {
+                            _results = [];
+                            _errorMessage = null;
+                          });
                         },
                       )
                     : null,
           ),
         ),
+        // Offline / bad-coordinate error message
+        if (_errorMessage != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Row(
+              children: [
+                const Icon(Icons.wifi_off_rounded, size: 18, color: Colors.red),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(fontSize: 14, color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
         if (_results.isNotEmpty)
           Container(
             margin: const EdgeInsets.only(top: 4),
