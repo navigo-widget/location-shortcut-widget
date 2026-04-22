@@ -1,5 +1,6 @@
 import 'package:share_plus/share_plus.dart';
 import 'package:navigo/models/shortcut.dart';
+import 'package:navigo/utils/expiry_utils.dart';
 
 /// Shares a shortcut via a clickable HTTPS link.
 ///
@@ -10,12 +11,19 @@ class SharingService {
   static const _baseUrl = 'https://navigo-widget.github.io';
 
   /// Build a shareable HTTPS URL for the redirect page.
+  ///
+  /// Expiry is encoded as a duration token (e.g. `expiry=3d`) so recipients
+  /// get a fresh window starting from when *they* add it.
   static String buildShareUrl(LocationShortcut shortcut) {
+    final expiryToken = shortcut.expiresAt != null
+        ? inferExpiryOption(shortcut.expiresAt, shortcut.createdAt).toUrlParam
+        : null;
     final params = {
       'label': shortcut.label,
       'lat': shortcut.latitude.toString(),
       'lng': shortcut.longitude.toString(),
       'icon': shortcut.iconName,
+      if (expiryToken != null) 'expiry': expiryToken,
     };
     final uri = Uri.parse(_baseUrl).replace(queryParameters: params);
     return uri.toString();

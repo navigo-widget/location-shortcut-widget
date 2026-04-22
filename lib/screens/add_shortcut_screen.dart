@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigo/models/shortcut.dart';
 import 'package:navigo/providers/shortcuts_provider.dart';
+import 'package:navigo/services/location_service.dart';
 import 'package:navigo/utils/expiry_utils.dart';
 import 'package:navigo/utils/shortcut_icons.dart';
 import 'package:navigo/widgets/expiry_picker.dart';
@@ -23,11 +24,58 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
   ExpiryOption _selectedExpiry = ExpiryOption.never;
   bool _iconManuallyChanged = false;
   bool _isSaving = false;
+  bool _isLocating = false;
 
   @override
   void dispose() {
     _labelController.dispose();
     super.dispose();
+  }
+
+  Future<void> _useCurrentLocation() async {
+    setState(() => _isLocating = true);
+    try {
+      final position = await LocationService.getCurrentPosition();
+      if (position == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Could not get your location. Please check location permissions.',
+              ),
+            ),
+          );
+        }
+        return;
+      }
+
+      final address = await LocationService.reverseGeocode(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (!mounted) return;
+
+      final label = address.split(',').first.trim();
+      setState(() {
+        _selectedPlace = PlaceResult(
+          description: address,
+          placeId: '',
+          latitude: position.latitude,
+          longitude: position.longitude,
+        );
+        if (_labelController.text.isEmpty) {
+          _labelController.text = label;
+        }
+        if (!_iconManuallyChanged) {
+          _selectedIcon = autoDetectIcon(
+            _labelController.text.isNotEmpty ? _labelController.text : label,
+          );
+        }
+      });
+    } finally {
+      if (mounted) setState(() => _isLocating = false);
+    }
   }
 
   Future<void> _save() async {
@@ -93,6 +141,23 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
                   );
                 });
               },
+            ),
+
+            const SizedBox(height: 12),
+
+            // "Use My Current Location" alternative
+            OutlinedButton.icon(
+              onPressed: _isLocating ? null : _useCurrentLocation,
+              icon: _isLocating
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.my_location_rounded),
+              label: Text(
+                _isLocating ? 'Getting your location…' : 'Use My Current Location',
+              ),
             ),
 
             if (_selectedPlace != null) ...[

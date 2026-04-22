@@ -173,17 +173,19 @@ class _PlaceSearchFieldState extends State<PlaceSearchField> {
               },
             ),
           ),
-        // OSM attribution — required by Nominatim usage policy
-        Padding(
-          padding: const EdgeInsets.only(top: 4, right: 4),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              '© OpenStreetMap contributors',
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+        // OSM attribution — required by Nominatim usage policy.
+        // Only shown while the dropdown is open (results visible).
+        if (_results.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 2, right: 4),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                '© OpenStreetMap contributors',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+              ),
             ),
           ),
-        ),
       ],
     );
   }
