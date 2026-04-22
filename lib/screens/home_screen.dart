@@ -5,10 +5,10 @@ import 'package:hive_ce/hive.dart';
 import 'package:navigo/models/shortcut.dart';
 import 'package:navigo/providers/shortcuts_provider.dart';
 import 'package:navigo/services/navigation_service.dart';
+import 'package:navigo/services/sharing_service.dart';
 import 'package:navigo/services/widget_service.dart';
 import 'package:navigo/utils/shortcut_icons.dart';
 import 'package:navigo/widgets/shortcut_button.dart';
-import 'package:navigo/widgets/empty_state.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -23,7 +23,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Check if we should prompt the user to add the widget
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkWidgetPrompt();
     });
@@ -31,20 +30,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _checkWidgetPrompt() async {
     final box = await Hive.openBox('settings');
-    final hasPrompted = box.get('widget_prompt_shown', defaultValue: false) as bool;
+    final hasPrompted =
+        box.get('widget_prompt_shown', defaultValue: false) as bool;
 
     if (hasPrompted || !mounted) return;
 
-    // Check if widget is already on the home screen
     final isPinned = await WidgetService.isWidgetPinned();
     if (isPinned || !mounted) return;
 
-    // Mark as prompted so we don't ask again
     await box.put('widget_prompt_shown', true);
-
-    // Show the prompt
     _showWidgetPromptDialog();
-
   }
 
   void _showWidgetPromptDialog() {
@@ -70,12 +65,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             label: const Text('Add Widget'),
             style: ElevatedButton.styleFrom(
               minimumSize: Size.zero,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
           ),
         ],
       ),
     );
+  }
+
+  // ── Delete with confirmation ─────────────────────────────────────────────
+
+  Future<void> _confirmDelete(LocationShortcut shortcut) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete "${shortcut.label}"?'),
+        content: const Text('You will lose this shortcut. This cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      ref.read(shortcutsProvider.notifier).deleteShortcut(shortcut.id);
+    }
   }
 
   @override
@@ -88,7 +110,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         actions: [
           if (shortcuts.isNotEmpty)
             TextButton(
-              onPressed: () => setState(() => _reorderMode = !_reorderMode),
+              onPressed: () =>
+                  setState(() => _reorderMode = !_reorderMode),
               child: Text(_reorderMode ? 'Done' : 'Reorder'),
             ),
           if (!_reorderMode)
@@ -99,31 +122,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
         ],
       ),
-      body: shortcuts.isEmpty
-          ? const EmptyState()
-          : _reorderMode
-              ? _ReorderList(shortcuts: shortcuts)
-              : Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.85,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                    ),
-                    itemCount: shortcuts.length,
-                    itemBuilder: (context, index) {
-                      final shortcut = shortcuts[index];
-                      return ShortcutButton(
-                        shortcut: shortcut,
-                        onEdit: () => context.push('/edit/${shortcut.id}'),
-                        onNavigate: () => _navigateToPlace(context, shortcut),
-                      );
-                    },
-                  ),
+      body: _reorderMode
+          ? _ReorderList(shortcuts: shortcuts)
+          : Padding(
+              padding: const EdgeInsets.all(12),
+              child: GridView.builder(
+                gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.85,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
                 ),
+                // +1 for the placeholder tile that is always last
+                itemCount: shortcuts.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == shortcuts.length) {
+                    return _PlaceholderTile(
+                      onTap: () => context.push('/add'),
+                    );
+                  }
+                  final shortcut = shortcuts[index];
+                  return ShortcutButton(
+                    shortcut: shortcut,
+                    onEdit: () => context.push('/edit/${shortcut.id}'),
+                    onNavigate: () =>
+                        _navigateToPlace(context, shortcut),
+                    onShare: () =>
+                        SharingService.shareShortcutWithFallback(shortcut),
+                    onDelete: () => _confirmDelete(shortcut),
+                  );
+                },
+              ),
+            ),
       floatingActionButton: _reorderMode
           ? null
           : FloatingActionButton.extended(
@@ -135,13 +166,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Future<void> _navigateToPlace(BuildContext context, shortcut) async {
+  Future<void> _navigateToPlace(
+      BuildContext context, LocationShortcut shortcut) async {
     final success = await NavigationService.navigateTo(shortcut);
     if (!success && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Could not open Google Maps. Is it installed?',
+            'Could not open a maps app. Please install Google Maps or another navigation app.',
             style: TextStyle(fontSize: 16),
           ),
         ),
@@ -150,11 +182,106 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 }
 
+// ── Placeholder tile ──────────────────────────────────────────────────────────
+
+class _PlaceholderTile extends StatelessWidget {
+  final VoidCallback onTap;
+  const _PlaceholderTile({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = Theme.of(context).colorScheme.primary;
+    final borderColor = isDark
+        ? primary.withAlpha(100)
+        : primary.withAlpha(80);
+    final iconColor = isDark
+        ? primary.withAlpha(160)
+        : primary.withAlpha(140);
+    final textColor = isDark
+        ? primary.withAlpha(180)
+        : primary.withAlpha(160);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: CustomPaint(
+        painter: _DashedBorderPainter(color: borderColor),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.add_location_alt_rounded,
+                size: 40,
+                color: iconColor,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Add your first\nlocation',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DashedBorderPainter extends CustomPainter {
+  final Color color;
+  const _DashedBorderPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const strokeWidth = 2.0;
+    const dashLen = 8.0;
+    const gapLen = 6.0;
+    const radius = 20.0;
+
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final path = Path()
+      ..addRRect(RRect.fromRectAndRadius(
+        Rect.fromLTWH(strokeWidth / 2, strokeWidth / 2,
+            size.width - strokeWidth, size.height - strokeWidth),
+        const Radius.circular(radius),
+      ));
+
+    for (final metric in path.computeMetrics()) {
+      double distance = 0;
+      bool draw = true;
+      while (distance < metric.length) {
+        final len = draw ? dashLen : gapLen;
+        if (draw) {
+          canvas.drawPath(
+            metric.extractPath(distance, distance + len),
+            paint,
+          );
+        }
+        distance += len;
+        draw = !draw;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedBorderPainter old) => old.color != color;
+}
+
 // ── Reorder list ──────────────────────────────────────────────────────────────
 
 class _ReorderList extends ConsumerWidget {
   final List<LocationShortcut> shortcuts;
-
   const _ReorderList({required this.shortcuts});
 
   @override
@@ -187,8 +314,8 @@ class _ReorderList extends ConsumerWidget {
             ),
             title: Text(
               shortcut.label,
-              style: const TextStyle(
-                  fontSize: 17, fontWeight: FontWeight.w600),
+              style:
+                  const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
               shortcut.address,

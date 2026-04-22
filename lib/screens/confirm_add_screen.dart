@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigo/models/shortcut.dart';
@@ -241,6 +242,8 @@ class _ConfirmAddScreenState extends ConsumerState<ConfirmAddScreen> {
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
+                      maxLength: 25,
+                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
                       decoration: InputDecoration(
                         hintText: 'Label',
                         border: InputBorder.none,
