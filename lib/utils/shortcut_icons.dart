@@ -96,7 +96,7 @@ const Map<String, ShortcutIconData> shortcutIcons = {
   ),
   'train': ShortcutIconData(
     icon: Icons.train_rounded,
-    color: Color(0xFF283593),
+    color: Color(0xFF546E7A), // steel blue-grey — railways/iron, not old brand indigo
     label: 'Train',
   ),
   'bus': ShortcutIconData(

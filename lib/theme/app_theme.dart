@@ -5,11 +5,16 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
-  // Core brand color — very dark forest green, works on both light and dark
-  static const Color brandBlue = Color(0xFF0a3d0f);        // very dark forest green (primary)
-  static const Color brandBlueLight = Color(0xFF1B5E20);   // deep forest green
-  static const Color brandBlueSurface = Color(0xFF052008); // near-black green
-  static const Color accentOrange = Color(0xFFFF8F00);     // amber accent (unchanged)
+  // Core brand colours — forest green palette
+  static const Color brandGreen = Color(0xFF0a3d0f);        // very dark forest green (primary)
+  static const Color brandGreenLight = Color(0xFF1B5E20);   // deep forest green
+  static const Color brandGreenSurface = Color(0xFF052008); // near-black green
+  static const Color accentOrange = Color(0xFFFF8F00);      // amber accent (unchanged)
+
+  // Keep old names as aliases so no call-sites break
+  static const Color brandBlue = brandGreen;
+  static const Color brandBlueLight = brandGreenLight;
+  static const Color brandBlueSurface = brandGreenSurface;
 
   // ─── Light Theme ───────────────────────────────────────────────
 
@@ -62,15 +67,17 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: const ColorScheme.dark(
-        primary: Color(0xFF69F0AE),          // mint green
+        primary: Color(0xFF69F0AE),               // mint green
         onPrimary: Colors.black,
-        primaryContainer: Color(0xFF0a3d0f),  // very dark green — selected tile bg in dark mode
+        primaryContainer: Color(0xFF0a3d0f),       // very dark green — selected tile bg in dark mode
         secondary: accentOrange,
         onSecondary: Colors.black,
         error: Color(0xFFEF5350),
-        surface: Color(0xFF0d1a0e),          // near-black green surface
-        onSurface: Color(0xFFE8F5E9),        // soft green-white
+        surface: Color(0xFF0d1a0e),               // near-black green surface
+        onSurface: Color(0xFFE8F5E9),             // soft green-white
+        surfaceContainerHigh: Color(0xFF1A2F1B),  // dark green — search dropdown bg
         surfaceContainerHighest: Color(0xFF162918), // very dark green card
+        outlineVariant: Color(0xFF2E5E2E),         // subtle green divider
       ),
       scaffoldBackgroundColor: const Color(0xFF080f09), // deep black-green
       textTheme: _textTheme(const Color(0xFFE8F5E9), const Color(0xFFA5D6A7)),
