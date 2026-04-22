@@ -78,9 +78,81 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
     }
   }
 
+  // ~11 m tolerance for floating-point coordinate comparison (same as ConfirmAddScreen)
+  static const _coordEpsilon = 0.0001;
+
+  // ── Duplicate-check dialogs ──────────────────────────────────────────
+
+  /// Shown when coords AND label both match an existing shortcut.
+  void _showExactDuplicateDialog(String label) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Already saved'),
+        content: Text('"$label" is already in your shortcuts.'),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Shown when coords match but label differs.
+  /// Returns true → replace existing, null → cancelled.
+  Future<bool?> _showReplaceDialog(LocationShortcut existing) {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Location already saved'),
+        content: Text(
+          'You already have "${existing.label}" saved at this location.\n\n'
+          'Do you want to replace it with this one?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),       // null → cancel
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true), // replace
+            child: const Text('Replace'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Shown when label matches but coords differ.
+  /// Informs the user and sends them back to rename — no "Save Anyway".
+  void _showLabelDuplicateDialog(String label) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Name already used'),
+        content: Text(
+          '"$label" is already the name of another shortcut.\n\n'
+          'Please choose a different name.',
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Save ─────────────────────────────────────────────────────────────
+
   Future<void> _save() async {
     if (_selectedPlace == null) return;
-    if (_labelController.text.trim().isEmpty) return;
+    final label = _labelController.text.trim();
+    if (label.isEmpty) return;
     if (_selectedPlace!.latitude == 0 && _selectedPlace!.longitude == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -92,24 +164,78 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
       return;
     }
 
+    // ── Duplicate checks (mirrors ConfirmAddScreen._runDuplicateCheck) ──
+    final existing = ref.read(shortcutsProvider);
+
+    // 1. Coordinate match?
+    final coordMatches = existing
+        .where((s) =>
+            (s.latitude - _selectedPlace!.latitude).abs() < _coordEpsilon &&
+            (s.longitude - _selectedPlace!.longitude).abs() < _coordEpsilon)
+        .toList();
+
+    if (coordMatches.isNotEmpty) {
+      final match = coordMatches.first;
+
+      if (match.label == label) {
+        // Exact duplicate — block entirely
+        _showExactDuplicateDialog(label);
+        return;
+      }
+
+      // Same location, different name — offer to replace
+      final replace = await _showReplaceDialog(match);
+      if (!mounted) return;
+
+      if (replace == null) return; // user cancelled
+
+      if (replace) {
+        // Replace the existing shortcut in-place
+        setState(() => _isSaving = true);
+        try {
+          await ref.read(shortcutsProvider.notifier).updateShortcut(
+                match.copyWith(
+                  label: label,
+                  address: _selectedPlace!.description,
+                  latitude: _selectedPlace!.latitude,
+                  longitude: _selectedPlace!.longitude,
+                  placeId: _selectedPlace!.placeId,
+                  iconName: _selectedIcon,
+                  expiresAt: _selectedExpiry.expiresAt,
+                ),
+              );
+          if (mounted) context.pop();
+        } finally {
+          if (mounted) setState(() => _isSaving = false);
+        }
+        return;
+      }
+      // replace == null → user cancelled, already returned above
+    }
+
+    // 2. Label-only match?
+    if (existing.any((s) => s.label == label)) {
+      _showLabelDuplicateDialog(label);
+      return; // send user back to rename
+    }
+
+    // ── Proceed with save ────────────────────────────────────────────
     setState(() => _isSaving = true);
-
     try {
-      final shortcut = LocationShortcut(
-        id: '', // Will be assigned by the provider
-        label: _labelController.text.trim(),
-        address: _selectedPlace!.description,
-        latitude: _selectedPlace!.latitude,
-        longitude: _selectedPlace!.longitude,
-        placeId: _selectedPlace!.placeId,
-        iconName: _selectedIcon,
-        sortOrder: 0,
-        createdAt: DateTime.now(),
-        expiresAt: _selectedExpiry.expiresAt,
-      );
-
-      await ref.read(shortcutsProvider.notifier).addShortcut(shortcut);
-
+      await ref.read(shortcutsProvider.notifier).addShortcut(
+            LocationShortcut(
+              id: '', // assigned by the provider
+              label: label,
+              address: _selectedPlace!.description,
+              latitude: _selectedPlace!.latitude,
+              longitude: _selectedPlace!.longitude,
+              placeId: _selectedPlace!.placeId,
+              iconName: _selectedIcon,
+              sortOrder: 0,
+              createdAt: DateTime.now(),
+              expiresAt: _selectedExpiry.expiresAt,
+            ),
+          );
       if (mounted) context.pop();
     } finally {
       if (mounted) setState(() => _isSaving = false);

@@ -8,7 +8,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #1A237E 0%, #283593 50%, #3949AB 100%);
+      background: linear-gradient(135deg, #052008 0%, #0a3d0f 50%, #1B5E20 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -27,7 +27,7 @@
     .logo {
       width: 80px;
       height: 80px;
-      background: #1A237E;
+      background: #0a3d0f;
       border-radius: 20px;
       margin: 0 auto 20px;
       display: flex;
@@ -35,7 +35,7 @@
       justify-content: center;
     }
     .logo svg { width: 50px; height: 50px; }
-    h1 { color: #1A237E; font-size: 28px; margin-bottom: 8px; }
+    h1 { color: #0a3d0f; font-size: 28px; margin-bottom: 8px; }
     .subtitle { color: #666; font-size: 16px; margin-bottom: 24px; }
     .place-name {
       background: #F5F5FA;
@@ -60,11 +60,11 @@
     }
     .btn:active { transform: scale(0.98); }
     .btn-primary {
-      background: #1A237E;
+      background: #2E7D32;
       color: white;
     }
     .btn-download {
-      background: #2E7D32;
+      background: #1B5E20;
       color: white;
     }
     .status-msg {
@@ -103,9 +103,9 @@
       <svg viewBox="0 0 108 108">
         <path fill="rgba(255,255,255,0.18)" d="M54,16c-20.99,0-38,17.01-38,38s17.01,38,38,38 38-17.01,38-38-17.01-38-38-38zM54,88c-18.78,0-34-15.22-34-34s15.22,-34,34-34 34,15.22,34,34-15.22,34-34,34z"/>
         <polygon fill="#FFFFFF" points="73.8,34.2 59.7,48.3 62.7,59.7"/>
-        <polygon fill="#90CAF9" points="73.8,34.2 48.3,59.7 59.7,48.3"/>
+        <polygon fill="#A5D6A7" points="73.8,34.2 48.3,59.7 59.7,48.3"/>
         <polygon fill="rgba(255,255,255,0.35)" points="34.2,73.8 48.3,59.7 45.3,48.3"/>
-        <polygon fill="rgba(144,202,249,0.3)" points="34.2,73.8 59.7,48.3 48.3,59.7"/>
+        <polygon fill="rgba(165,214,167,0.3)" points="34.2,73.8 59.7,48.3 48.3,59.7"/>
         <circle fill="rgba(255,255,255,0.9)" cx="54" cy="54" r="3.5"/>
       </svg>
     </div>
@@ -113,7 +113,7 @@
     <p class="subtitle">One-tap navigation for everyone</p>
 
     <!-- Loading state -->
-    <div id="loading">Opening NaviGo...</div>
+    <div id="loading">Opening NaviGo&hellip;</div>
 
     <!-- Fallback content: shown only if the app didn't open -->
     <div id="fallback-content" class="hidden">
@@ -123,7 +123,7 @@
       </div>
 
       <p class="status-msg" id="status-msg">
-        It looks like NaviGo isn't installed yet.<br>
+        It looks like NaviGo isn&rsquo;t installed yet.<br>
         Download it to add this location.
       </p>
 
@@ -147,7 +147,7 @@
     <div id="error-state" class="hidden">
       <div class="emoji">&#x1F9ED;</div>
       <p style="color:#666;font-size:16px;margin-bottom:24px;">
-        This link doesn't contain a valid location.<br>
+        This link doesn&rsquo;t contain a valid location.<br>
         Ask the sender to share it again from NaviGo.
       </p>
     </div>
@@ -162,8 +162,6 @@
       train: '\u{1F686}', bus: '\u{1F68C}', petrol: '\u26FD', market: '\u{1F3EA}',
       friend: '\u{1F46B}', family: '\u{1F468}\u200D\u{1F469}\u200D\u{1F467}\u200D\u{1F466}', place: '\u{1F4CD}'
     };
-
-    const DOWNLOAD_URL = 'https://github.com/navigo-widget/location-shortcut-widget/releases/latest/download/app-release.apk';
 
     function isAndroid() {
       return /android/i.test(navigator.userAgent);
@@ -186,29 +184,36 @@
         return;
       }
 
-      const queryParams = `label=${encodeURIComponent(label)}&lat=${lat}&lng=${lng}&icon=${icon}`;
-      const deepLink = `navigo://add?${queryParams}`;
+      const queryParams = 'label=' + encodeURIComponent(label) + '&lat=' + lat + '&lng=' + lng + '&icon=' + icon;
+      const deepLink = 'navigo://add?' + queryParams;
 
-      // Build fallback URL: current page without the redirect attempt
+      // Build the fallback URL: same page + opened=1 so we skip the intent retry
       var fallbackPage = window.location.href;
       if (fallbackPage.indexOf('opened=') === -1) {
         fallbackPage += (fallbackPage.indexOf('?') === -1 ? '?' : '&') + 'opened=1';
       }
-      const intentUrl = `intent://add?${queryParams}#Intent;scheme=navigo;package=com.navigo.app;S.browser_fallback_url=${encodeURIComponent(fallbackPage)};end`;
+      const intentUrl = 'intent://add?' + queryParams +
+        '#Intent;scheme=navigo;package=com.navigo.app;' +
+        'S.browser_fallback_url=' + encodeURIComponent(fallbackPage) + ';end';
 
-      // Show the fallback UI immediately so it's visible even if redirect fails.
-      // This prevents "resource not found" errors in in-app browsers and WebViews.
+      // Always show the fallback UI immediately — the Download button is always visible.
       showFallback(label, icon, intentUrl, deepLink);
 
-      // If we already tried to redirect (came back via S.browser_fallback_url), don't retry.
+      // If Chrome already followed S.browser_fallback_url back here, skip the retry.
       if (params.get('opened')) {
         return;
       }
 
-      // Try to open the app. On Android Chrome, intent:// URLs are handled natively.
-      // On other browsers/WebViews, skip the redirect since they can't handle intent://.
+      // On Android Chrome, fire the intent URL via a hidden anchor click.
+      // Using a.click() (rather than window.location.href) keeps the page visible
+      // so the Download button remains accessible if the app is not installed.
       if (isAndroid() && isChrome()) {
-        window.location.href = intentUrl;
+        var a = document.createElement('a');
+        a.href = intentUrl;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       }
     }
 
@@ -220,11 +225,7 @@
       document.getElementById('place-label').textContent = decodeURIComponent(label);
 
       var btn = document.getElementById('btn-open-app');
-      if (isAndroid()) {
-        btn.href = intentUrl;
-      } else {
-        btn.href = deepLink;
-      }
+      btn.href = isAndroid() ? intentUrl : deepLink;
     }
 
     init();
