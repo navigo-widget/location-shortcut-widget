@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:navigo/providers/shortcuts_provider.dart';
 import 'package:navigo/providers/theme_provider.dart';
 import 'package:navigo/providers/widget_style_provider.dart';
+import 'package:navigo/services/notification_service.dart';
 import 'package:navigo/services/widget_service.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -14,18 +15,29 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool? _isWidgetPinned;
+  bool? _notificationsEnabled;
 
   @override
   void initState() {
     super.initState();
     _checkWidgetStatus();
+    _checkNotificationStatus();
   }
 
   Future<void> _checkWidgetStatus() async {
     final pinned = await WidgetService.isWidgetPinned();
-    if (mounted) {
-      setState(() => _isWidgetPinned = pinned);
-    }
+    if (mounted) setState(() => _isWidgetPinned = pinned);
+  }
+
+  Future<void> _checkNotificationStatus() async {
+    final enabled = await NotificationService.areNotificationsEnabled();
+    if (mounted) setState(() => _notificationsEnabled = enabled);
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    await NotificationService.requestPermission();
+    // Re-check after requesting — the dialog may have been accepted or denied
+    await _checkNotificationStatus();
   }
 
   void _showRemoveWidgetHelp() {
@@ -157,6 +169,67 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   const SizedBox(height: 12),
                   _WidgetStylePicker(),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // ── Notifications ──────────────────────────────────────
+          const _SectionHeader('Notifications'),
+          const SizedBox(height: 8),
+
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(
+                    _notificationsEnabled == true
+                        ? Icons.notifications_active_rounded
+                        : Icons.notifications_off_rounded,
+                    size: 32,
+                    color: _notificationsEnabled == true
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.error,
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _notificationsEnabled == true
+                              ? 'Notifications enabled'
+                              : 'Notifications disabled',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: theme.textTheme.bodyLarge?.color,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _notificationsEnabled == true
+                              ? 'You\'ll be alerted before shortcuts expire'
+                              : 'Enable to get expiry reminders',
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (_notificationsEnabled == false)
+                    FilledButton.tonalIcon(
+                      onPressed: _requestNotificationPermission,
+                      icon: const Icon(Icons.notifications_rounded, size: 20),
+                      label: const Text('Enable'),
+                      style: FilledButton.styleFrom(
+                        minimumSize: Size.zero,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                      ),
+                    ),
                 ],
               ),
             ),

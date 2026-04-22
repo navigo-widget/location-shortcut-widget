@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:navigo/models/shortcut.dart';
@@ -333,6 +334,8 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
             TextField(
               controller: _labelController,
               style: const TextStyle(fontSize: 20),
+              maxLength: 25,
+              maxLengthEnforcement: MaxLengthEnforcement.enforced,
               decoration: const InputDecoration(
                 hintText: 'e.g. City Hospital',
                 labelText: 'Shortcut Name',

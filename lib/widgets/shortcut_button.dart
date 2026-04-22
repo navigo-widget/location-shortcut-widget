@@ -5,19 +5,95 @@ import 'package:navigo/utils/expiry_utils.dart';
 import 'package:navigo/utils/shortcut_icons.dart';
 
 /// A senior-friendly tile with split tap zones:
-/// - Top 75%: tap to edit the shortcut
-/// - Bottom 25%: tap to navigate via Google Maps
+/// - Top 75%: tap to edit, long-press for context menu (Edit / Share / Delete)
+/// - Bottom 25%: tap to navigate via maps app
 class ShortcutButton extends StatelessWidget {
   final LocationShortcut shortcut;
   final VoidCallback onNavigate;
   final VoidCallback onEdit;
+  final VoidCallback onShare;
+  final VoidCallback onDelete;
 
   const ShortcutButton({
     super.key,
     required this.shortcut,
     required this.onNavigate,
     required this.onEdit,
+    required this.onShare,
+    required this.onDelete,
   });
+
+  void _showContextMenu(BuildContext context) {
+    HapticFeedback.mediumImpact();
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetCtx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withAlpha(80),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                // Title
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  child: Text(
+                    shortcut.label,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.edit_rounded),
+                  title: const Text('Edit', style: TextStyle(fontSize: 17)),
+                  onTap: () {
+                    Navigator.pop(sheetCtx);
+                    onEdit();
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.share_rounded),
+                  title: const Text('Share', style: TextStyle(fontSize: 17)),
+                  onTap: () {
+                    Navigator.pop(sheetCtx);
+                    onShare();
+                  },
+                ),
+                ListTile(
+                  leading:
+                      const Icon(Icons.delete_rounded, color: Colors.red),
+                  title: const Text('Delete',
+                      style:
+                          TextStyle(fontSize: 17, color: Colors.red)),
+                  onTap: () {
+                    Navigator.pop(sheetCtx);
+                    onDelete();
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +105,6 @@ class ShortcutButton extends StatelessWidget {
     final tint = expiryTintColor(expiryStatus, isDark);
 
     return Card(
-      // Let the card theme supply the correct surface colour for each mode
-      // (dark: 0xFF0d1a0e near-black green, light: white).
       elevation: isDark ? 1 : 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -38,11 +112,12 @@ class ShortcutButton extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          // ─── Top 75%: Edit zone ─────────────────────────
+          // ─── Top 75%: Edit zone (long-press for context menu) ─────
           Expanded(
             flex: 75,
             child: InkWell(
               onTap: onEdit,
+              onLongPress: () => _showContextMenu(context),
               child: Stack(
                 children: [
                   // Background tint for expiry warning
@@ -91,9 +166,7 @@ class ShortcutButton extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: isDark
-                                ? Colors.white
-                                : const Color(0xFF1A1A2E),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                           textAlign: TextAlign.center,
                           maxLines: 2,
@@ -136,8 +209,6 @@ class ShortcutButton extends StatelessWidget {
                       Icon(
                         Icons.navigation_rounded,
                         size: 18,
-                        // Dark mode: always white so dark icon colours
-                        // don't vanish against the tinted background.
                         color: isDark ? Colors.white : iconData.color,
                       ),
                       const SizedBox(width: 5),

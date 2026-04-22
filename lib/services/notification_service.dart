@@ -91,4 +91,20 @@ class NotificationService {
   static Future<void> cancelAll() async {
     await _plugin.cancelAll();
   }
+
+  /// Returns true if the user has granted the POST_NOTIFICATIONS permission.
+  static Future<bool> areNotificationsEnabled() async {
+    final impl = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    return await impl?.areNotificationsEnabled() ?? false;
+  }
+
+  /// Show the system permission dialog (no-op if already granted or permanently
+  /// denied — in that case the user must go to system Settings manually).
+  static Future<void> requestPermission() async {
+    await _plugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.requestNotificationsPermission();
+  }
 }
