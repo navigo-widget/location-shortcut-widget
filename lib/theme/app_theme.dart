@@ -99,8 +99,8 @@ class AppTheme {
       cardTheme: _cardThemeDark(),
       dialogTheme: _dialogTheme(const Color(0xFFE8E8F0)),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: Color(0xFF69F0AE), // mint green — matches dark theme primary
-        foregroundColor: Colors.black,
+        backgroundColor: Color(0xFF1B5E20), // deep forest green — prominent but not neon
+        foregroundColor: Colors.white,
         extendedTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
       ),
     );

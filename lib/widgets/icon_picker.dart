@@ -21,7 +21,9 @@ class IconPickerCompact extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E2E) : const Color(0xFFF5F5FA),
+        color: isDark
+          ? Theme.of(context).colorScheme.surface
+          : const Color(0xFFF5F5FA),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: iconData.color.withAlpha(isDark ? 80 : 50),
