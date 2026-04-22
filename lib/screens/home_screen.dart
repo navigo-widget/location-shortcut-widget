@@ -286,8 +286,6 @@ class _ReorderList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return ReorderableListView.builder(
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 80),
       itemCount: shortcuts.length,
@@ -301,7 +299,7 @@ class _ReorderList extends ConsumerWidget {
         return Card(
           key: ValueKey(shortcut.id),
           margin: const EdgeInsets.symmetric(vertical: 5),
-          color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+          // Let the card theme supply the correct surface colour for each mode
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

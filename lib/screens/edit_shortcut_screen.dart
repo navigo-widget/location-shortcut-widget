@@ -287,9 +287,7 @@ class _EditShortcutScreenState extends ConsumerState<EditShortcutScreen> {
                         _newPlace?.description ?? shortcut.address,
                         style: TextStyle(
                           fontSize: 15,
-                          color: isDark
-                              ? theme.colorScheme.onSurface
-                              : const Color(0xFF1A1A2E),
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                     ),
