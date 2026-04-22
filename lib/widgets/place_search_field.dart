@@ -179,44 +179,50 @@ class _PlaceSearchFieldState extends State<PlaceSearchField> {
           ),
 
         if (_results.isNotEmpty)
-          Container(
-            margin: const EdgeInsets.only(top: 4),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(25),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            constraints: const BoxConstraints(maxHeight: 300),
-            child: ListView.separated(
-              shrinkWrap: true,
-              padding: EdgeInsets.zero,
-              itemCount: _results.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final result = _results[index];
-                return ListTile(
-                  leading: const Icon(Icons.place, size: 28),
-                  title: Text(
-                    result.displayName,
-                    style: const TextStyle(fontSize: 16),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+          Builder(builder: (context) {
+            final scheme = Theme.of(context).colorScheme;
+            return Container(
+              margin: const EdgeInsets.only(top: 4),
+              decoration: BoxDecoration(
+                color: scheme.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(40),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  onTap: () => _onResultSelected(result),
-                );
-              },
-            ),
-          ),
+                ],
+              ),
+              constraints: const BoxConstraints(maxHeight: 300),
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                itemCount: _results.length,
+                separatorBuilder: (_, __) =>
+                    Divider(height: 1, color: scheme.outlineVariant),
+                itemBuilder: (context, index) {
+                  final result = _results[index];
+                  return ListTile(
+                    leading: Icon(Icons.place,
+                        size: 28, color: scheme.primary),
+                    title: Text(
+                      result.displayName,
+                      style: TextStyle(
+                          fontSize: 16, color: scheme.onSurface),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    onTap: () => _onResultSelected(result),
+                  );
+                },
+              ),
+            );
+          }),
         // OSM attribution — required by Nominatim usage policy.
         // Only shown while the dropdown is open (results visible).
         if (_results.isNotEmpty)
