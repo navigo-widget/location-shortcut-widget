@@ -156,6 +156,19 @@ class _ConfirmAddScreenState extends ConsumerState<ConfirmAddScreen> {
     final label = _labelController.text.trim();
     if (label.isEmpty) return;
 
+    // Reject obviously invalid coordinates (e.g. a malformed deep-link)
+    if (widget.shortcut.latitude == 0 && widget.shortcut.longitude == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'This link contains invalid location data. Please ask for a new share link.',
+            style: TextStyle(fontSize: 16),
+          ),
+        ),
+      );
+      return;
+    }
+
     await ref
         .read(shortcutsProvider.notifier)
         .addShortcut(widget.shortcut.copyWith(label: label));
