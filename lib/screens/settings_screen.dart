@@ -508,10 +508,10 @@ class _FrostedGlassPreview extends StatelessWidget {
 /// Mini bold-colors widget preview.
 class _BoldColorsPreview extends StatelessWidget {
   static const _colors = [
-    Color(0xFF1565C0),
-    Color(0xFF00897B),
-    Color(0xFFE65100),
-    Color(0xFF6A1B9A),
+    Color(0xFF2E7D32), // dark green (brand)
+    Color(0xFF00897B), // teal
+    Color(0xFFE65100), // deep orange
+    Color(0xFF6A1B9A), // purple
   ];
 
   @override

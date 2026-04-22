@@ -15,7 +15,15 @@ class ExpiryPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final primary = theme.colorScheme.primary;
+    // In dark mode the mint primary is too bright as a chip background.
+    // Flip: use dark green container as background, mint as text/border.
+    final selectedBg =
+        isDark ? theme.colorScheme.primaryContainer : primary;
+    final selectedFg = isDark ? primary : Colors.white;
+    final selectedBorder =
+        isDark ? primary : primary;
 
     return Wrap(
       spacing: 8,
@@ -26,18 +34,18 @@ class ExpiryPicker extends StatelessWidget {
           label: Text(option.label),
           selected: isSelected,
           onSelected: (_) => onChanged(option),
-          selectedColor: primary,
+          selectedColor: selectedBg,
           backgroundColor: theme.colorScheme.surfaceContainerHighest,
           labelStyle: TextStyle(
             fontSize: 15,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-            color: isSelected ? Colors.white : theme.textTheme.bodyLarge?.color,
+            color: isSelected ? selectedFg : theme.textTheme.bodyLarge?.color,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: isSelected
-                ? BorderSide(color: primary, width: 2)
+                ? BorderSide(color: selectedBorder, width: 2)
                 : BorderSide.none,
           ),
           showCheckmark: false,

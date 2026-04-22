@@ -51,23 +51,24 @@ class ShortcutsNotifier extends StateNotifier<List<LocationShortcut>> {
     );
     await _storage.add(newShortcut);
     state = _storage.getAll();
-    await NotificationService.scheduleExpiryWarning(newShortcut);
-    await WidgetService.syncToWidget(state, style: _widgetStyle);
+    // Side effects: failures must never block the core save operation
+    try { await NotificationService.scheduleExpiryWarning(newShortcut); } catch (_) {}
+    try { await WidgetService.syncToWidget(state, style: _widgetStyle); } catch (_) {}
   }
 
   Future<void> updateShortcut(LocationShortcut shortcut) async {
     await _storage.update(shortcut);
     state = _storage.getAll();
-    await NotificationService.cancel(shortcut.id);
-    await NotificationService.scheduleExpiryWarning(shortcut);
-    await WidgetService.syncToWidget(state, style: _widgetStyle);
+    try { await NotificationService.cancel(shortcut.id); } catch (_) {}
+    try { await NotificationService.scheduleExpiryWarning(shortcut); } catch (_) {}
+    try { await WidgetService.syncToWidget(state, style: _widgetStyle); } catch (_) {}
   }
 
   Future<void> deleteShortcut(String id) async {
-    await NotificationService.cancel(id);
+    try { await NotificationService.cancel(id); } catch (_) {}
     await _storage.delete(id);
     state = _storage.getAll();
-    await WidgetService.syncToWidget(state, style: _widgetStyle);
+    try { await WidgetService.syncToWidget(state, style: _widgetStyle); } catch (_) {}
   }
 
   Future<void> reorder(int oldIndex, int newIndex) async {
@@ -77,6 +78,6 @@ class ShortcutsNotifier extends StateNotifier<List<LocationShortcut>> {
     shortcuts.insert(newIndex, item);
     await _storage.reorder(shortcuts);
     state = _storage.getAll();
-    await WidgetService.syncToWidget(state, style: _widgetStyle);
+    try { await WidgetService.syncToWidget(state, style: _widgetStyle); } catch (_) {}
   }
 }

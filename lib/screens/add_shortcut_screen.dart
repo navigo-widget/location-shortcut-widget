@@ -94,23 +94,25 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
 
     setState(() => _isSaving = true);
 
-    final shortcut = LocationShortcut(
-      id: '', // Will be assigned by the provider
-      label: _labelController.text.trim(),
-      address: _selectedPlace!.description,
-      latitude: _selectedPlace!.latitude,
-      longitude: _selectedPlace!.longitude,
-      placeId: _selectedPlace!.placeId,
-      iconName: _selectedIcon,
-      sortOrder: 0,
-      createdAt: DateTime.now(),
-      expiresAt: _selectedExpiry.expiresAt,
-    );
+    try {
+      final shortcut = LocationShortcut(
+        id: '', // Will be assigned by the provider
+        label: _labelController.text.trim(),
+        address: _selectedPlace!.description,
+        latitude: _selectedPlace!.latitude,
+        longitude: _selectedPlace!.longitude,
+        placeId: _selectedPlace!.placeId,
+        iconName: _selectedIcon,
+        sortOrder: 0,
+        createdAt: DateTime.now(),
+        expiresAt: _selectedExpiry.expiresAt,
+      );
 
-    await ref.read(shortcutsProvider.notifier).addShortcut(shortcut);
+      await ref.read(shortcutsProvider.notifier).addShortcut(shortcut);
 
-    if (mounted) {
-      context.pop();
+      if (mounted) context.pop();
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 

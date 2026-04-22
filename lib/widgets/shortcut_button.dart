@@ -29,7 +29,8 @@ class ShortcutButton extends StatelessWidget {
     final tint = expiryTintColor(expiryStatus, isDark);
 
     return Card(
-      color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+      // Let the card theme supply the correct surface colour for each mode
+      // (dark: 0xFF0d1a0e near-black green, light: white).
       elevation: isDark ? 1 : 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -126,7 +127,7 @@ class ShortcutButton extends StatelessWidget {
                 onNavigate();
               },
               child: Container(
-                color: iconData.color.withAlpha(isDark ? 40 : 20),
+                color: iconData.color.withAlpha(isDark ? 60 : 20),
                 child: Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -135,7 +136,9 @@ class ShortcutButton extends StatelessWidget {
                       Icon(
                         Icons.navigation_rounded,
                         size: 18,
-                        color: iconData.color,
+                        // Dark mode: always white so dark icon colours
+                        // don't vanish against the tinted background.
+                        color: isDark ? Colors.white : iconData.color,
                       ),
                       const SizedBox(width: 5),
                       Text(
@@ -143,7 +146,7 @@ class ShortcutButton extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: iconData.color,
+                          color: isDark ? Colors.white : iconData.color,
                         ),
                       ),
                     ],
