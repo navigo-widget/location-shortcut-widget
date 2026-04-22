@@ -101,9 +101,7 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
   }
 
   /// Shown when coords match but label differs.
-  /// Returns true  → replace existing
-  ///         false → save as a new shortcut anyway
-  ///         null  → cancelled
+  /// Returns true → replace existing, null → cancelled.
   Future<bool?> _showReplaceDialog(LocationShortcut existing) {
     return showDialog<bool>(
       context: context,
@@ -116,15 +114,11 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),        // null → cancel
+            onPressed: () => Navigator.pop(ctx),       // null → cancel
             child: const Text('Cancel'),
           ),
-          OutlinedButton(
-            onPressed: () => Navigator.pop(ctx, false), // save as new
-            child: const Text('Save Anyway'),
-          ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),  // replace
+            onPressed: () => Navigator.pop(ctx, true), // replace
             child: const Text('Replace'),
           ),
         ],
@@ -133,29 +127,24 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
   }
 
   /// Shown when label matches but coords differ.
-  /// Returns true → proceed with save, false / null → cancel.
-  Future<bool> _showLabelDuplicateDialog(String label) async {
-    final result = await showDialog<bool>(
+  /// Informs the user and sends them back to rename — no "Save Anyway".
+  void _showLabelDuplicateDialog(String label) {
+    showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Name already used'),
         content: Text(
-          '"$label" already exists in your shortcuts.\n\n'
-          'Save this new place with the same name?',
+          '"$label" is already the name of another shortcut.\n\n'
+          'Please choose a different name.',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Save Anyway'),
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK'),
           ),
         ],
       ),
     );
-    return result ?? false;
   }
 
   // ── Save ─────────────────────────────────────────────────────────────
@@ -221,14 +210,13 @@ class _AddShortcutScreenState extends ConsumerState<AddShortcutScreen> {
         }
         return;
       }
-      // replace == false → fall through and save as a new shortcut
+      // replace == null → user cancelled, already returned above
     }
 
     // 2. Label-only match?
     if (existing.any((s) => s.label == label)) {
-      final proceed = await _showLabelDuplicateDialog(label);
-      if (!mounted) return;
-      if (!proceed) return;
+      _showLabelDuplicateDialog(label);
+      return; // send user back to rename
     }
 
     // ── Proceed with save ────────────────────────────────────────────
