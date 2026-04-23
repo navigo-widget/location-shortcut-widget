@@ -38,13 +38,19 @@
     h1 { color: #0a3d0f; font-size: 28px; margin-bottom: 8px; }
     .subtitle { color: #666; font-size: 16px; margin-bottom: 24px; }
     .place-name {
-      background: #F5F5FA;
+      background: #F0F7F0;
       border-radius: 16px;
       padding: 20px;
       margin-bottom: 24px;
+      border: 1.5px solid #C8E6C9;
     }
     .place-name .icon { font-size: 32px; margin-bottom: 8px; }
     .place-name .name { font-size: 22px; font-weight: 600; color: #1A1A2E; }
+    .place-name .sublabel {
+      font-size: 13px;
+      color: #888;
+      margin-top: 4px;
+    }
     .btn {
       display: block;
       width: 100%;
@@ -56,26 +62,36 @@
       margin-bottom: 12px;
       border: none;
       cursor: pointer;
-      transition: transform 0.1s;
+      transition: transform 0.1s, opacity 0.1s;
     }
-    .btn:active { transform: scale(0.98); }
+    .btn:active { transform: scale(0.98); opacity: 0.9; }
     .btn-primary {
       background: #2E7D32;
       color: white;
     }
-    .btn-download {
-      background: #1B5E20;
-      color: white;
+    .btn-secondary {
+      background: transparent;
+      color: #2E7D32;
+      border: 2px solid #2E7D32;
+      padding: 16px;
     }
-    .status-msg {
-      color: #666;
-      font-size: 15px;
-      margin-bottom: 20px;
-      line-height: 1.5;
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 4px 0 16px;
+      color: #bbb;
+      font-size: 13px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e0e0e0;
     }
     .features {
       text-align: left;
-      margin: 16px 0 8px;
+      margin: 20px 0 8px;
       padding: 0 8px;
     }
     .features li {
@@ -93,7 +109,6 @@
       font-size: 16px;
     }
     .hidden { display: none; }
-    #loading { color: #666; font-size: 16px; padding: 40px 0; }
     #error-state .emoji { font-size: 48px; margin-bottom: 16px; }
   </style>
 </head>
@@ -112,27 +127,29 @@
     <h1>NaviGo</h1>
     <p class="subtitle">One-tap navigation for everyone</p>
 
-    <!-- Loading state -->
-    <div id="loading">Opening NaviGo&hellip;</div>
-
-    <!-- Fallback content: shown only if the app didn't open -->
-    <div id="fallback-content" class="hidden">
+    <!-- Main content (shown immediately) -->
+    <div id="main-content" class="hidden">
       <div class="place-name">
         <div class="icon" id="place-icon"></div>
         <div class="name" id="place-label"></div>
+        <div class="sublabel">Shared via NaviGo</div>
       </div>
 
-      <p class="status-msg" id="status-msg">
-        It looks like NaviGo isn&rsquo;t installed yet.<br>
-        Download it to add this location.
-      </p>
-
-      <a id="btn-open-app" class="btn btn-primary" href="#">
-        Open in NaviGo
+      <!-- Primary: download -->
+      <a id="btn-download" class="btn btn-primary"
+         href="https://github.com/navigo-widget/location-shortcut-widget/releases/download/latest/app-release.apk">
+        &#x2B07;&#xFE0F;&nbsp; Download NaviGo (Free)
       </a>
 
-      <a id="btn-download" class="btn btn-download" href="https://github.com/navigo-widget/location-shortcut-widget/releases/latest/download/app-release.apk">
-        Download NaviGo (Free)
+      <p style="color:#888;font-size:13px;margin-bottom:12px;">
+        Download &amp; install, then open this link again to add the place.
+      </p>
+
+      <div class="divider">already installed?</div>
+
+      <!-- Secondary: open app -->
+      <a id="btn-open-app" class="btn btn-secondary" href="#">
+        Open in NaviGo
       </a>
 
       <ul class="features">
@@ -163,69 +180,42 @@
       friend: '\u{1F46B}', family: '\u{1F468}\u200D\u{1F469}\u200D\u{1F467}\u200D\u{1F466}', place: '\u{1F4CD}'
     };
 
-    function isAndroid() {
-      return /android/i.test(navigator.userAgent);
-    }
-
-    function isChrome() {
-      return /chrome/i.test(navigator.userAgent) && !/edg/i.test(navigator.userAgent);
-    }
+    const APK_URL = 'https://github.com/navigo-widget/location-shortcut-widget/releases/download/latest/app-release.apk';
 
     function init() {
       const params = new URLSearchParams(window.location.search);
       const label = params.get('label');
-      const lat = params.get('lat');
-      const lng = params.get('lng');
-      const icon = params.get('icon') || 'place';
+      const lat   = params.get('lat');
+      const lng   = params.get('lng');
+      const icon  = params.get('icon') || 'place';
 
       if (!label || !lat || !lng) {
-        document.getElementById('loading').classList.add('hidden');
         document.getElementById('error-state').classList.remove('hidden');
         return;
       }
 
-      const queryParams = 'label=' + encodeURIComponent(label) + '&lat=' + lat + '&lng=' + lng + '&icon=' + icon;
-      const deepLink = 'navigo://add?' + queryParams;
-
-      // Build the fallback URL: same page + opened=1 so we skip the intent retry
-      var fallbackPage = window.location.href;
-      if (fallbackPage.indexOf('opened=') === -1) {
-        fallbackPage += (fallbackPage.indexOf('?') === -1 ? '?' : '&') + 'opened=1';
-      }
+      // Build the deep link and intent URL for the "Open in NaviGo" button.
+      // We never fire this automatically — the user taps it knowingly.
+      const queryParams = 'label=' + encodeURIComponent(label) +
+                          '&lat=' + lat + '&lng=' + lng + '&icon=' + icon;
+      const deepLink  = 'navigo://add?' + queryParams;
       const intentUrl = 'intent://add?' + queryParams +
-        '#Intent;scheme=navigo;package=com.navigo.app;' +
-        'S.browser_fallback_url=' + encodeURIComponent(fallbackPage) + ';end';
+                        '#Intent;scheme=navigo;package=com.navigo.app;' +
+                        'S.browser_fallback_url=' + encodeURIComponent(APK_URL) + ';end';
 
-      // Always show the fallback UI immediately — the Download button is always visible.
-      showFallback(label, icon, intentUrl, deepLink);
+      // Populate the card immediately — no loading spinner, no redirect.
+      document.getElementById('place-icon').textContent =
+        iconMap[icon] || '\u{1F4CD}';
+      document.getElementById('place-label').textContent =
+        decodeURIComponent(label);
 
-      // If Chrome already followed S.browser_fallback_url back here, skip the retry.
-      if (params.get('opened')) {
-        return;
-      }
+      // "Open in NaviGo": use intent URL on Android (handles fallback to APK
+      // download if app not found), plain deep link on other platforms.
+      const isAndroid = /android/i.test(navigator.userAgent);
+      document.getElementById('btn-open-app').href =
+        isAndroid ? intentUrl : deepLink;
 
-      // On Android Chrome, fire the intent URL via a hidden anchor click.
-      // Using a.click() (rather than window.location.href) keeps the page visible
-      // so the Download button remains accessible if the app is not installed.
-      if (isAndroid() && isChrome()) {
-        var a = document.createElement('a');
-        a.href = intentUrl;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }
-    }
-
-    function showFallback(label, icon, intentUrl, deepLink) {
-      document.getElementById('loading').classList.add('hidden');
-      document.getElementById('fallback-content').classList.remove('hidden');
-
-      document.getElementById('place-icon').textContent = iconMap[icon] || '\u{1F4CD}';
-      document.getElementById('place-label').textContent = decodeURIComponent(label);
-
-      var btn = document.getElementById('btn-open-app');
-      btn.href = isAndroid() ? intentUrl : deepLink;
+      document.getElementById('main-content').classList.remove('hidden');
     }
 
     init();

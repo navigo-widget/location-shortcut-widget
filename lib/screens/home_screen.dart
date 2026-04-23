@@ -134,10 +134,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
                 ),
-                // +1 for the placeholder tile that is always last
-                itemCount: shortcuts.length + 1,
+                // Show a single placeholder tile when there are no shortcuts yet.
+                itemCount: shortcuts.isEmpty ? 1 : shortcuts.length,
                 itemBuilder: (context, index) {
-                  if (index == shortcuts.length) {
+                  if (shortcuts.isEmpty) {
                     return _PlaceholderTile(
                       onTap: () => context.push('/add'),
                     );
