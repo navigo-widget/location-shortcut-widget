@@ -112,45 +112,31 @@
     <h1>NaviGo</h1>
     <p class="subtitle">One-tap navigation for everyone</p>
 
-    <!-- Loading state -->
-    <div id="loading">Opening NaviGo&hellip;</div>
-
-    <!-- Fallback content: shown only if the app didn't open -->
-    <div id="fallback-content" class="hidden">
-      <div class="place-name">
-        <div class="icon" id="place-icon"></div>
-        <div class="name" id="place-label"></div>
-      </div>
-
-      <p class="status-msg" id="status-msg">
-        It looks like NaviGo isn&rsquo;t installed yet.<br>
-        Download it to add this location.
-      </p>
-
-      <a id="btn-open-app" class="btn btn-primary" href="#">
-        Open in NaviGo
-      </a>
-
-      <a id="btn-download" class="btn btn-download" href="https://github.com/navigo-widget/location-shortcut-widget/releases/latest/download/app-release.apk">
-        Download NaviGo (Free)
-      </a>
-
-      <ul class="features">
-        <li data-icon="&#x2705;">Save places as one-tap shortcuts</li>
-        <li data-icon="&#x1F4F1;">Home screen widget for instant access</li>
-        <li data-icon="&#x1F91D;">Share locations with family easily</li>
-        <li data-icon="&#x1F9D3;">Designed for seniors &mdash; big buttons, simple UI</li>
-      </ul>
+    <!-- Place tile: only shown when the URL has a valid location -->
+    <div id="place-tile" class="place-name hidden">
+      <div class="icon" id="place-icon"></div>
+      <div class="name" id="place-label"></div>
     </div>
 
-    <!-- Error state -->
-    <div id="error-state" class="hidden">
-      <div class="emoji">&#x1F9ED;</div>
-      <p style="color:#666;font-size:16px;margin-bottom:24px;">
-        This link doesn&rsquo;t contain a valid location.<br>
-        Ask the sender to share it again from NaviGo.
-      </p>
-    </div>
+    <!-- Status message: text varies by state (loading / fallback / error) -->
+    <p class="status-msg" id="status-msg">Opening NaviGo&hellip;</p>
+
+    <!-- Open-in-app button: only shown when the URL has a valid location -->
+    <a id="btn-open-app" class="btn btn-primary hidden" href="#">
+      Open in NaviGo
+    </a>
+
+    <!-- Download button: ALWAYS visible -->
+    <a id="btn-download" class="btn btn-download" href="https://github.com/navigo-widget/location-shortcut-widget/releases/latest/download/app-release.apk">
+      Download NaviGo (Free)
+    </a>
+
+    <ul class="features">
+      <li data-icon="&#x2705;">Save places as one-tap shortcuts</li>
+      <li data-icon="&#x1F4F1;">Home screen widget for instant access</li>
+      <li data-icon="&#x1F91D;">Share locations with family easily</li>
+      <li data-icon="&#x1F9D3;">Designed for seniors &mdash; big buttons, simple UI</li>
+    </ul>
   </div>
 
   <script>
@@ -178,9 +164,10 @@
       const lng = params.get('lng');
       const icon = params.get('icon') || 'place';
 
+      const statusMsg = document.getElementById('status-msg');
+
       if (!label || !lat || !lng) {
-        document.getElementById('loading').classList.add('hidden');
-        document.getElementById('error-state').classList.remove('hidden');
+        statusMsg.innerHTML = 'This link doesn&rsquo;t contain a valid location.<br>Install NaviGo to start saving your own.';
         return;
       }
 
@@ -196,7 +183,7 @@
         '#Intent;scheme=navigo;package=com.navigo.app;' +
         'S.browser_fallback_url=' + encodeURIComponent(fallbackPage) + ';end';
 
-      // Always show the fallback UI immediately — the Download button is always visible.
+      // Reveal the place tile + Open-in-app button. Download button is always visible.
       showFallback(label, icon, intentUrl, deepLink);
 
       // If Chrome already followed S.browser_fallback_url back here, skip the retry.
@@ -218,14 +205,16 @@
     }
 
     function showFallback(label, icon, intentUrl, deepLink) {
-      document.getElementById('loading').classList.add('hidden');
-      document.getElementById('fallback-content').classList.remove('hidden');
-
+      document.getElementById('place-tile').classList.remove('hidden');
       document.getElementById('place-icon').textContent = iconMap[icon] || '\u{1F4CD}';
       document.getElementById('place-label').textContent = decodeURIComponent(label);
 
+      document.getElementById('status-msg').innerHTML =
+        'It looks like NaviGo isn&rsquo;t installed yet.<br>Download it to add this location.';
+
       var btn = document.getElementById('btn-open-app');
       btn.href = isAndroid() ? intentUrl : deepLink;
+      btn.classList.remove('hidden');
     }
 
     init();
