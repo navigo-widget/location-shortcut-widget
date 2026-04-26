@@ -298,7 +298,7 @@ class _ConfirmAddScreenState extends ConsumerState<ConfirmAddScreen> {
                             const SizedBox(width: 6),
                             Text(
                               'Expires in '
-                              '${inferExpiryOption(widget.shortcut.expiresAt, widget.shortcut.createdAt).label.toLowerCase()} '
+                              '${inferExpiryOption(widget.shortcut.expiresAt, widget.shortcut.createdAt).longLabel} '
                               'after you add it',
                               style: const TextStyle(
                                 fontSize: 13,
