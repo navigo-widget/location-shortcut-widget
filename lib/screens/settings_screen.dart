@@ -560,16 +560,16 @@ class _FrostedGlassPreview extends StatelessWidget {
   Widget _glassTile() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(90),
+        color: Colors.white.withAlpha(46),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white.withAlpha(50)),
+        border: Border.all(color: Colors.white.withAlpha(64)),
       ),
       child: Center(
         child: Container(
           width: 14,
           height: 14,
           decoration: BoxDecoration(
-            color: Colors.white.withAlpha(140),
+            color: Colors.white.withAlpha(120),
             shape: BoxShape.circle,
           ),
         ),
