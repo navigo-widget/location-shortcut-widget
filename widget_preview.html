@@ -70,7 +70,8 @@
     gap: 6px;
     padding: 10px 8px;
     border-radius: 16px;
-    background: rgba(255,255,255,0.18);
+    /* Smooth top-to-bottom gradient — no seam. */
+    background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0.12));
     border: 0.5px solid rgba(255,255,255,0.25);
     min-height: 0;
     aspect-ratio: 1;
