@@ -25,32 +25,54 @@ class ExpiryPicker extends StatelessWidget {
     final selectedBorder =
         isDark ? primary : primary;
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: ExpiryOption.values.map((option) {
-        final isSelected = option == selected;
-        return ChoiceChip(
-          label: Text(option.label),
-          selected: isSelected,
-          onSelected: (_) => onChanged(option),
-          selectedColor: selectedBg,
-          backgroundColor: theme.colorScheme.surfaceContainerHighest,
-          labelStyle: TextStyle(
-            fontSize: 15,
-            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-            color: isSelected ? selectedFg : theme.textTheme.bodyLarge?.color,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          shape: RoundedRectangleBorder(
+    // Fixed single row — every option gets equal width, never wraps or
+    // scrolls. Compact labels (e.g. "3d", "1m") keep this readable on
+    // narrow phone screens.
+    return Row(
+      children: [
+        for (var i = 0; i < ExpiryOption.values.length; i++) ...[
+          if (i > 0) const SizedBox(width: 6),
+          Expanded(child: _chip(theme, ExpiryOption.values[i], selectedBg, selectedFg, selectedBorder)),
+        ],
+      ],
+    );
+  }
+
+  Widget _chip(ThemeData theme, ExpiryOption option, Color selectedBg,
+      Color selectedFg, Color selectedBorder) {
+    final isSelected = option == selected;
+    return Material(
+      color: isSelected
+          ? selectedBg
+          : theme.colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () => onChanged(option),
+        child: Container(
+          height: 40,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            side: isSelected
-                ? BorderSide(color: selectedBorder, width: 2)
-                : BorderSide.none,
+            border: isSelected
+                ? Border.all(color: selectedBorder, width: 2)
+                : null,
           ),
-          showCheckmark: false,
-        );
-      }).toList(),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            option.label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color:
+                  isSelected ? selectedFg : theme.textTheme.bodyLarge?.color,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

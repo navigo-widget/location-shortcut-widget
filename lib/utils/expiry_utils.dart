@@ -4,12 +4,22 @@ import 'package:flutter/material.dart';
 enum ExpiryOption { never, threeDays, oneWeek, oneMonth, oneYear }
 
 extension ExpiryOptionX on ExpiryOption {
+  /// Compact chip label, e.g. "1m", "3d", "Never".
   String get label => switch (this) {
         ExpiryOption.never => 'Never',
-        ExpiryOption.threeDays => '3 Days',
-        ExpiryOption.oneWeek => '1 Week',
-        ExpiryOption.oneMonth => '1 Month',
-        ExpiryOption.oneYear => '1 Year',
+        ExpiryOption.threeDays => '3d',
+        ExpiryOption.oneWeek => '1w',
+        ExpiryOption.oneMonth => '1m',
+        ExpiryOption.oneYear => '1y',
+      };
+
+  /// Full-word label for use in prose, e.g. "3 days", "1 month".
+  String get longLabel => switch (this) {
+        ExpiryOption.never => 'Never',
+        ExpiryOption.threeDays => '3 days',
+        ExpiryOption.oneWeek => '1 week',
+        ExpiryOption.oneMonth => '1 month',
+        ExpiryOption.oneYear => '1 year',
       };
 
   /// URL-safe token used in deep-link share URLs (e.g. `expiry=3d`).
