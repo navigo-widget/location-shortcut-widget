@@ -8,7 +8,7 @@ import 'package:navigo/utils/expiry_utils.dart';
 /// 1. Tries to open the NaviGo app via custom scheme
 /// 2. Shows a "Open in Google Maps" fallback button
 class SharingService {
-  static const _baseUrl = 'https://navigo-widget.github.io';
+  static const _baseUrl = 'https://navigo-widget.github.io/location-shortcut-widget/';
 
   /// Build a shareable HTTPS URL for the redirect page.
   ///
